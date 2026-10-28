@@ -1,0 +1,856 @@
+# Software Requirements Specification (SRS)
+## The Dead Code Séance
+**Version:** 1.0  
+**Project Type:** AI-Powered Repository Analysis Tool  
+**Hackathon:** Hacktoberfest 2026 — Ghost in the Machine  
+**Primary Technologies:** Python, Flask, React, Vite, GitPython, Gemma, SQLite
+
+---
+
+## 1. Introduction
+
+### 1.1 Purpose
+
+The Dead Code Séance is an AI-powered software archaeology tool designed to help developers understand abandoned, archived, or unfamiliar GitHub repositories.
+
+The application analyzes a repository's source code, commit history, issues, pull requests, and available discussions to reconstruct the project's development history. Users can then interact with an AI assistant that answers questions about the repository's past, present state, and unfinished features.
+
+The AI assistant adopts the metaphorical voice of a repository's ghost while grounding its answers in verifiable project evidence.
+
+The application aims to demonstrate how open-weight AI models can help preserve software knowledge, understand legacy codebases, and revive abandoned open-source projects without requiring source code to be sent to a third-party AI inference service.
+
+### 1.2 Scope
+
+The system will provide the following capabilities:
+
+- Analyze local Git repositories and publicly accessible GitHub repositories.
+- Extract commit history, file changes, source code, documentation, issues, and pull requests where available.
+- Generate a chronological timeline of significant project changes.
+- Answer natural-language questions about the repository's development history.
+- Identify potentially unfinished features, TODO comments, unresolved issues, and incomplete work.
+- Generate an evidence-backed report describing the repository's current state.
+- Suggest practical steps for understanding or reviving an abandoned project.
+- Run AI inference locally using an open-weight Gemma model.
+- Display evidence references alongside AI-generated answers.
+- Export repository analysis reports.
+
+The initial version will prioritize repository analysis, conversational exploration, a visual timeline, and an unfinished-business report.
+
+### 1.3 Intended Users
+
+**Developers:** People exploring unfamiliar or legacy codebases.
+
+**Open-source contributors:** Contributors who want to understand a project's history before making changes.
+
+**Maintainers:** Developers investigating previous design decisions, recurring bugs, or abandoned features.
+
+**Students:** Students learning how real-world software projects evolve over time.
+
+**Software archivists:** Individuals interested in preserving the history and technical context of abandoned projects.
+
+### 1.4 Definitions and Abbreviations
+
+| Term | Definition |
+|---|---|
+| SRS | Software Requirements Specification |
+| LLM | Large Language Model |
+| Gemma | An open-weight family of AI models |
+| Repository | A collection of source code and related project files managed through Git |
+| Commit | A recorded change in a Git repository |
+| Pull Request (PR) | A proposed change to a repository |
+| RAG | Retrieval-Augmented Generation |
+| Evidence | A source record supporting an AI-generated claim |
+| Repository Ghost | The AI persona that answers questions using repository evidence |
+| Local Inference | Running model inference on the user's own computer |
+
+---
+
+## 2. Overall Description
+
+### 2.1 Product Perspective
+
+The Dead Code Séance will operate as a web-based interface connected to a Python backend and a local AI inference engine.
+
+Users will provide a GitHub repository URL or select a repository available on their computer. The backend will collect and process relevant project information, create a searchable repository index, and provide relevant context to the AI model.
+
+The model will generate answers based on retrieved evidence. The frontend will display the answers alongside references to relevant commits, files, issues, or pull requests.
+
+The system is intended to be local-first: source code and AI inference should remain on the user's machine when using local mode. A separately deployed web interface may be provided, but deployment must not silently send private source code to an external inference service.
+
+### 2.2 Product Objectives
+
+The main objectives are:
+
+1. **Reconstruct software history:** Help users understand why a project evolved in a particular direction.
+2. **Recover lost context:** Make important information from commits, issues, and discussions easier to discover.
+3. **Identify unfinished work:** Highlight features and tasks that may have been abandoned.
+4. **Support project revival:** Suggest evidence-based next steps for contributing to or maintaining an inactive repository.
+5. **Preserve privacy:** Support local model inference without requiring an external AI API.
+6. **Improve transparency:** Make it possible to verify AI responses against original repository records.
+
+### 2.3 User Characteristics
+
+Users should have basic familiarity with software repositories and web applications. Advanced Git knowledge will not be required for routine interactions.
+
+The application should explain technical findings in accessible language while retaining direct links to the underlying technical evidence.
+
+### 2.4 Operating Environment
+
+**Frontend**
+- React
+- Vite
+- HTML5
+- CSS3
+- JavaScript
+
+**Backend**
+- Python
+- Flask REST API
+
+**Repository Processing**
+- GitPython
+- Git command-line tools
+- GitHub REST API for remote repository metadata
+
+**AI Processing**
+- Locally running Gemma model
+- Ollama or another compatible local inference runtime
+
+**Data Storage**
+- SQLite for repository metadata and analysis records
+- Local filesystem for repository data and generated reports
+- Optional FAISS index for semantic retrieval
+
+**Deployment**
+- Local development environment on Windows, Linux, or macOS, subject to dependency compatibility.
+- Optional deployment of the frontend and selected backend components using Render.
+
+### 2.5 Constraints
+
+1. Local AI inference depends on the user's hardware and the selected Gemma model.
+2. Large repositories may require substantial memory, processing time, and storage.
+3. GitHub API access may be restricted by rate limits or repository permissions.
+4. Issues, discussions, and pull requests may be unavailable for some repositories.
+5. Deleted, unavailable, or never-recorded project discussions cannot be reconstructed reliably.
+6. The system must not claim to know a developer's intentions unless the available evidence supports that conclusion.
+7. Remote GitHub collection requires internet access. Fully offline operation is possible only for repository information already available locally.
+8. Private repositories must not be accessed without appropriate user authorization.
+
+---
+
+## 3. Functional Requirements
+
+### FR-01: Repository Input
+
+The system shall allow users to enter a GitHub repository URL or select a local Git repository.
+
+**Requirements:**
+- Validate the provided URL or local repository path.
+- Check whether the repository is accessible.
+- Allow users to initiate an analysis.
+- Display errors for invalid URLs, missing directories, inaccessible repositories, or unsupported inputs.
+- Warn users before downloading or analyzing a large repository.
+
+**Expected result:** The user can select a repository for analysis.
+
+### FR-02: Repository Data Collection
+
+The system shall collect available information from the selected repository.
+
+**Data may include:**
+- Commit messages and timestamps.
+- Commit authors as recorded in Git.
+- Changed files and diffs.
+- Branch and tag information where available.
+- Source files and project documentation.
+- Issues and their comments.
+- Pull requests, descriptions, reviews, and comments where available and authorized.
+- TODO, FIXME, and similar markers in source code.
+
+**Requirements:**
+- Support local Git repositories.
+- Retrieve remote repository metadata through the GitHub API where applicable.
+- Handle missing information gracefully.
+- Avoid collecting unnecessary files, secrets, build artifacts, or dependency directories.
+- Record the origin of collected information.
+
+### FR-03: Repository Analysis and Indexing
+
+The system shall process the collected information into a searchable representation.
+
+**Requirements:**
+- Extract meaningful content from source files and documentation.
+- Organize commit records chronologically.
+- Associate changed files with relevant commits.
+- Index issue and pull-request content when available.
+- Support keyword-based retrieval.
+- Optionally support semantic retrieval using embeddings.
+- Exclude irrelevant or oversized files according to configurable limits.
+- Track indexing status and report processing errors.
+
+**Expected result:** Repository information can be searched and retrieved for subsequent analysis.
+
+### FR-04: AI-Powered Repository Conversation
+
+The system shall allow users to ask natural-language questions about the analyzed repository.
+
+Example questions include:
+
+- Why was this function introduced?
+- What was the original purpose of this project?
+- Why was a particular library replaced?
+- What happened to the unfinished authentication feature?
+- Which bugs repeatedly appeared in the commit history?
+- What was the last major change made to the project?
+- Which parts of the application appear incomplete?
+
+**Requirements:**
+- Use retrieved repository evidence as context for AI generation.
+- Run inference using the configured Gemma model in local mode.
+- Present answers in a distinctive but readable repository-ghost persona.
+- Include supporting evidence references.
+- Distinguish documented facts from reasonable interpretations.
+- State when there is insufficient evidence to answer a question.
+- Avoid inventing commits, issues, developer statements, or historical events.
+
+**Expected result:** Users can investigate repository history through a conversational interface.
+
+### FR-05: Commit Archaeology
+
+The system shall provide a chronological view of important repository changes.
+
+**Requirements:**
+- Display commit messages and dates.
+- Show relevant changed files.
+- Allow users to inspect individual commits.
+- Highlight potentially significant changes using transparent criteria.
+- Link to the original commit when a remote URL is available.
+- Allow users to filter the timeline by date or search term.
+
+**Expected result:** Users can understand how the project changed over time.
+
+### FR-06: Unfinished Business Detection
+
+The system shall identify potential indicators of incomplete or abandoned work.
+
+**Detection sources may include:**
+- TODO and FIXME comments.
+- Open issues.
+- Unmerged or unresolved pull requests.
+- Incomplete feature references in documentation.
+- Recent commits that suggest work was started but not completed.
+- References to planned features that do not appear to be implemented.
+
+**Requirements:**
+- Group findings by category.
+- Show the source of each finding.
+- Clearly distinguish detected indicators from confirmed incomplete features.
+- Avoid treating every TODO comment or open issue as evidence of abandonment.
+- Allow users to inspect each finding.
+
+**Expected result:** Users receive a list of potential unfinished tasks with supporting evidence.
+
+### FR-07: Unfinished-Business Report
+
+The system shall generate a report summarizing the repository's history and current state.
+
+The report shall address:
+
+1. What was the project originally intended to accomplish?
+2. What major changes occurred during development?
+3. What features or tasks may remain unfinished?
+4. What technical problems or recurring bugs are visible in the available history?
+5. What evidence-supported steps could help revive the project?
+6. What information is missing or uncertain?
+
+**Requirements:**
+- Include an executive summary.
+- Include a development timeline.
+- List potential unfinished work.
+- Provide references to supporting commits, files, issues, or pull requests.
+- Clearly identify uncertainty.
+- Support export to Markdown or JSON.
+
+**Expected result:** Users can save and share a structured project archaeology report.
+
+### FR-08: Evidence Board
+
+The system shall provide a way to inspect the evidence behind AI-generated responses.
+
+**Requirements:**
+- Associate relevant evidence with generated answers.
+- Display commit identifiers, file paths, issue numbers, or pull-request identifiers where available.
+- Link to original GitHub records when applicable.
+- Show the relevant excerpt or summary.
+- Distinguish direct evidence from AI-generated interpretation.
+- Indicate when a conclusion is uncertain or weakly supported.
+
+**Expected result:** Users can verify the reasoning behind repository-analysis results.
+
+### FR-09: Resurrection Plan
+
+The system shall suggest a practical plan for understanding, maintaining, or reviving a repository.
+
+**The plan may include:**
+- Setting up the development environment.
+- Identifying dependencies and configuration requirements.
+- Investigating unresolved issues.
+- Reviewing potentially unfinished features.
+- Prioritizing bugs.
+- Identifying outdated dependencies.
+- Suggesting a sequence of maintenance tasks.
+
+**Requirements:**
+- Base suggestions on repository evidence wherever possible.
+- Explain the reason for each recommendation.
+- Separate evidence-based findings from speculative suggestions.
+- Avoid automatically modifying the repository in the initial version.
+- Allow users to export the plan.
+
+**Expected result:** Users receive an actionable starting point for contributing to the project.
+
+### FR-10: Local AI Inference
+
+The system shall support inference using a locally available Gemma model.
+
+**Requirements:**
+- Connect to a compatible local inference runtime.
+- Check whether the configured model is available.
+- Display an informative error if the model cannot be reached.
+- Allow users to configure the model where supported.
+- Avoid sending repository contents to external AI inference services in local mode.
+- Clearly communicate when internet access is required for remote repository collection or model installation.
+
+**Expected result:** Users can analyze repository information using local AI inference.
+
+### FR-11: Report Export
+
+The system shall allow users to export analysis results.
+
+**Supported formats:**
+- Markdown
+- JSON
+
+**Requirements:**
+- Include the repository name and analysis date.
+- Include the major findings and timeline.
+- Preserve evidence references.
+- Include uncertainty notes where applicable.
+- Ensure exported files do not unintentionally contain credentials or other secrets.
+
+### FR-12: Analysis Status and Error Handling
+
+The system shall communicate the progress and status of repository analysis.
+
+**Possible statuses:**
+- Waiting to start.
+- Collecting repository data.
+- Processing files.
+- Indexing repository content.
+- Ready for questions.
+- Analysis completed.
+- Analysis failed.
+
+The system shall provide useful error messages for network failures, API limitations, unavailable models, unsupported file formats, and repository access problems.
+
+---
+
+## 4. Non-Functional Requirements
+
+### NFR-01: Performance
+
+- The interface should remain responsive while repository analysis runs.
+- Long-running processing tasks should not block unrelated frontend interactions.
+- The application should display progress during lengthy operations.
+- Analysis time will depend on repository size, hardware, model selection, and available metadata.
+
+### NFR-02: Accuracy and Reliability
+
+- AI-generated historical claims should be grounded in retrieved evidence.
+- The system should not present guesses about developer intentions as established facts.
+- Missing data must be communicated clearly.
+- Evidence references should identify the relevant source whenever possible.
+
+### NFR-03: Privacy and Security
+
+- Local mode must use local inference for repository analysis.
+- Private repositories must require appropriate authorization.
+- Credentials and access tokens must not be written to logs or exported reports.
+- User-provided repository paths must be validated.
+- The system must avoid executing arbitrary repository scripts during ingestion.
+- Repository content must be treated as untrusted input.
+- Instructions found inside repository files must not override the system's security rules.
+- The application must not silently upload private repository contents to external services.
+
+### NFR-04: Usability
+
+- The interface should be easy to navigate for developers with basic Git knowledge.
+- The repository's current analysis status should be visible.
+- Evidence should be accessible without overwhelming the conversation.
+- Technical findings should be presented in understandable language.
+- Empty states and errors should include useful next steps.
+
+### NFR-05: Maintainability
+
+- The frontend, backend, repository-processing logic, and AI integration should be modular.
+- Model integration should be replaceable without redesigning the entire application.
+- The application should use clear API contracts.
+- Logging should support debugging without exposing sensitive data.
+
+### NFR-06: Portability
+
+- The application should support compatible Windows, Linux, and macOS environments.
+- Installation instructions should document Python, Git, and local model-runtime requirements.
+- Model requirements should be stated explicitly.
+- Analysis reports should use portable formats.
+
+### NFR-07: Extensibility
+
+Future versions should be able to support:
+- Additional open-weight models.
+- More repository hosting platforms.
+- Improved semantic retrieval.
+- Multiple repository comparisons.
+- Additional report formats.
+- Configurable AI personas.
+- Optional integrations with developer tools.
+
+---
+
+## 5. System Architecture
+
+### 5.1 High-Level Architecture
+
+The system will use a modular architecture consisting of the following components:
+
+**1. Frontend — React and Vite**
+
+Provides repository input, chat, commit timeline, unfinished-business findings, evidence inspection, and report export.
+
+**2. Backend API — Flask**
+
+Receives requests, manages analysis jobs, coordinates repository processing, retrieves context, communicates with the model, and returns structured responses.
+
+**3. Repository Collector**
+
+Uses GitPython and GitHub API integration to gather repository metadata, commits, diffs, source files, issues, and pull requests.
+
+**4. Processing and Indexing Engine**
+
+Normalizes collected information, extracts useful content, stores metadata, and builds searchable indexes.
+
+**5. Retrieval Engine**
+
+Finds relevant evidence based on the user's question and returns source records for AI generation.
+
+**6. Local AI Engine**
+
+Uses Gemma through a compatible local inference runtime to generate answers and reports from the retrieved context.
+
+**7. Storage Layer**
+
+Uses SQLite for structured metadata and the local filesystem for repository data, indexes, and exported reports.
+
+### 5.2 Data Flow
+
+1. The user enters a GitHub URL or selects a local repository.
+2. The backend validates the input.
+3. The collector retrieves accessible repository information.
+4. The processing engine extracts and indexes relevant records.
+5. The user submits a question.
+6. The retrieval engine selects relevant evidence.
+7. The backend sends the question and evidence to the local Gemma model.
+8. The model generates a response.
+9. The backend associates the response with its supporting evidence.
+10. The frontend displays the answer and source references.
+11. The user can inspect the timeline, explore unfinished work, or export a report.
+
+### 5.3 Suggested Database Tables
+
+**Repositories**
+- repository_id
+- repository_name
+- repository_url
+- local_path
+- analyzed_at
+- analysis_status
+
+**Commits**
+- commit_id
+- repository_id
+- commit_hash
+- author
+- commit_message
+- commit_date
+- changed_files
+
+**Issues**
+- issue_id
+- repository_id
+- issue_number
+- title
+- body
+- state
+- created_at
+- updated_at
+
+**PullRequests**
+- pull_request_id
+- repository_id
+- pr_number
+- title
+- description
+- state
+- created_at
+- updated_at
+
+**Evidence**
+- evidence_id
+- repository_id
+- source_type
+- source_identifier
+- source_location
+- content_excerpt
+
+**AnalysisReports**
+- report_id
+- repository_id
+- report_type
+- report_content
+- created_at
+
+The schema may be expanded as the implementation develops. Large diffs and full source files should generally remain in the local repository or file store rather than being duplicated indiscriminately in SQLite.
+
+---
+
+## 6. External Interface Requirements
+
+### 6.1 User Interface
+
+The interface should adopt a dark, atmospheric, software-archaeology theme while maintaining readability.
+
+**Required screens:**
+
+**A. Landing Page**
+- Project name and tagline.
+- Repository URL input.
+- Local repository selection option.
+- Start-analysis button.
+- Short explanation of privacy and local inference.
+
+**B. Repository Dashboard**
+- Repository name.
+- Analysis status.
+- Summary of repository activity.
+- Last recorded commit.
+- Navigation to chat, timeline, and reports.
+
+**C. Repository Séance Chat**
+- Conversation interface.
+- Repository-ghost responses.
+- Evidence references.
+- Loading and error states.
+
+**D. Ghost Timeline**
+- Chronological commit history.
+- Major project milestones.
+- Search and filtering controls.
+- Links to source records.
+
+**E. Unfinished Business**
+- Potentially incomplete features.
+- TODO and FIXME findings.
+- Unresolved issues and pull requests.
+- Evidence for each finding.
+
+**F. Report Viewer**
+- Repository summary.
+- Historical analysis.
+- Unfinished-business report.
+- Resurrection plan.
+- Export controls.
+
+### 6.2 Backend API
+
+The following REST endpoints are proposed.
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | `/api/repositories/analyze` | Start repository analysis |
+| GET | `/api/repositories` | List analyzed repositories |
+| GET | `/api/repositories/{id}` | Retrieve repository details |
+| GET | `/api/repositories/{id}/timeline` | Retrieve commit timeline |
+| GET | `/api/repositories/{id}/unfinished` | Retrieve unfinished-work findings |
+| POST | `/api/repositories/{id}/chat` | Ask a question about the repository |
+| GET | `/api/repositories/{id}/evidence/{evidence_id}` | Retrieve an evidence record |
+| POST | `/api/repositories/{id}/report` | Generate an analysis report |
+| GET | `/api/repositories/{id}/report/{report_id}` | Retrieve a generated report |
+| GET | `/api/health` | Check backend health |
+
+The exact endpoint design may change during implementation. Long-running analysis should use a job identifier and a separate status endpoint or equivalent progress mechanism.
+
+### 6.3 AI Interface
+
+The backend will communicate with the local inference runtime through its supported interface.
+
+The AI context should contain:
+- The user's question.
+- Relevant repository records.
+- Evidence identifiers.
+- Instructions to separate facts from hypotheses.
+- Instructions to admit when the evidence is insufficient.
+
+The model should return a structured response that the backend can validate before displaying it.
+
+---
+
+## 7. Use Cases
+
+### UC-01: Analyze an Abandoned Repository
+
+**Actor:** Developer
+
+**Preconditions:** The repository is accessible locally or through an authorized remote source.
+
+**Main flow:**
+1. The developer opens the application.
+2. The developer enters a repository URL or selects a local repository.
+3. The system validates the input.
+4. The system collects available repository information.
+5. The system processes and indexes the data.
+6. The system displays the completed analysis.
+
+**Alternative flows:**
+- If the repository is inaccessible, the system displays an error.
+- If some metadata is unavailable, the system continues with the accessible information and reports the limitation.
+- If processing fails, the system records the error and allows the user to retry.
+
+**Postcondition:** The repository is ready for exploration, provided sufficient data was processed.
+
+### UC-02: Ask the Repository About Its Past
+
+**Actor:** Developer
+
+**Preconditions:** Repository analysis has completed.
+
+**Main flow:**
+1. The developer opens the chat interface.
+2. The developer asks a question.
+3. The system retrieves relevant repository evidence.
+4. The local AI model generates a response.
+5. The system displays the response and evidence references.
+6. The developer opens a reference to verify the information.
+
+**Alternative flow:** If no relevant evidence is found, the system explains that it cannot establish a reliable answer.
+
+**Postcondition:** The developer receives an evidence-backed explanation or a clear statement of uncertainty.
+
+### UC-03: Generate an Unfinished-Business Report
+
+**Actor:** Developer or maintainer
+
+**Preconditions:** Repository data has been processed.
+
+**Main flow:**
+1. The user opens the unfinished-business section.
+2. The system identifies relevant indicators.
+3. The user requests a report.
+4. The AI model summarizes the findings and proposes possible next steps.
+5. The system displays the report with evidence references.
+6. The user exports the report.
+
+**Postcondition:** A report is available for review or export.
+
+### UC-04: Explore the Development Timeline
+
+**Actor:** Developer
+
+**Preconditions:** Commit history is available.
+
+**Main flow:**
+1. The user opens the timeline.
+2. The system displays commits chronologically.
+3. The user selects a commit.
+4. The system displays the commit message and available change details.
+5. The user follows a source link or asks the AI about the change.
+
+**Postcondition:** The user can inspect the repository's recorded development history.
+
+---
+
+## 8. Data and Privacy Requirements
+
+### 8.1 Data Sources
+
+The system may process:
+- Git commit metadata.
+- Source code and documentation.
+- Issue and pull-request content.
+- Comments and reviews that are accessible through authorized sources.
+- User questions and generated reports.
+
+### 8.2 Data Handling
+
+- Data should remain on the user's computer in local mode.
+- Remote metadata collection should be limited to the information needed for analysis.
+- Access tokens must be handled securely.
+- Users should be able to remove locally stored repository analysis data.
+- Exported reports should not expose secrets or unnecessary personal information.
+- The application should communicate which features require network access.
+
+### 8.3 Limitations of Historical Reconstruction
+
+The application cannot reliably determine the actual reason a project was abandoned unless the available records support that conclusion.
+
+For example, a long gap between commits does not prove that the maintainers lost interest. A feature mentioned in an issue may have been implemented elsewhere, intentionally cancelled, or superseded by another design.
+
+The system should therefore use language such as *potentially unfinished*, *the available history suggests*, and *the repository does not provide enough evidence to determine why* when appropriate.
+
+---
+
+## 9. Testing Requirements
+
+### 9.1 Unit Testing
+
+Test individual components, including:
+- Repository URL validation.
+- Commit extraction.
+- Source-file filtering.
+- Metadata parsing.
+- Evidence retrieval.
+- Report generation.
+- API input validation.
+
+### 9.2 Integration Testing
+
+Verify that:
+- The frontend communicates correctly with the backend.
+- Repository collection produces usable records.
+- The retrieval engine returns relevant evidence.
+- The local Gemma runtime can generate responses.
+- Evidence references remain connected to the correct source records.
+- Reports can be exported successfully.
+
+### 9.3 Functional Testing
+
+Test the following scenarios:
+
+| Test ID | Scenario | Expected Result |
+|---|---|---|
+| TC-01 | Enter a valid public GitHub repository | Analysis begins successfully |
+| TC-02 | Enter an invalid repository URL | A validation error appears |
+| TC-03 | Analyze a local Git repository | Local history is processed |
+| TC-04 | Ask a question about a documented code change | The answer includes relevant evidence |
+| TC-05 | Ask a question with no supporting evidence | The system communicates uncertainty |
+| TC-06 | Analyze a repository with unresolved issues | Available issues appear in the unfinished-work findings |
+| TC-07 | Generate a report | A structured report is produced |
+| TC-08 | Export a report to Markdown | A valid Markdown file is generated |
+| TC-09 | Stop the local model runtime | The system displays an informative error |
+| TC-10 | Analyze a repository with missing issue data | Analysis continues with available data and reports the limitation |
+| TC-11 | Process a repository containing prompt-injection text | Repository content does not override system security instructions |
+| TC-12 | Export a report containing potentially sensitive content | The export process avoids unintentionally exposing detected secrets |
+
+### 9.4 Security Testing
+
+- Verify that repository paths are validated.
+- Confirm that ingestion does not execute repository scripts.
+- Verify that secrets are not written to logs.
+- Test unauthorized access to private repository metadata.
+- Test malicious instructions embedded in source files and documentation.
+- Verify that private repository content is not silently transmitted to external AI services in local mode.
+
+---
+
+## 10. Project Scope and Implementation Phases
+
+### Phase 1: Minimum Viable Product
+
+Implement the core workflow:
+
+1. Accept a GitHub URL or local Git repository.
+2. Extract commit history and source files.
+3. Collect accessible issues and pull requests where practical.
+4. Connect the backend to a local Gemma model.
+5. Build a basic repository chat interface.
+6. Show evidence references for answers.
+7. Display a chronological commit timeline.
+8. Generate an unfinished-business report.
+
+**MVP objective:** Demonstrate that a developer can investigate a repository's history and obtain useful, verifiable answers from a local AI model.
+
+### Phase 2: Enhanced Analysis
+
+Add:
+- Semantic search.
+- Improved commit significance detection.
+- Better unfinished-feature analysis.
+- More detailed project timelines.
+- Exportable resurrection plans.
+- Improved evidence inspection.
+
+### Phase 3: Presentation and Deployment
+
+Add:
+- A polished gothic interface.
+- Improved loading and progress indicators.
+- Example repositories for demonstrations.
+- Installation and setup documentation.
+- Optional Render deployment for components that can be hosted safely.
+- A recorded demonstration and Hacktoberfest submission documentation.
+
+### Phase 4: Future Enhancements
+
+Potential future features include:
+- Multiple AI ghost personas.
+- Repository comparison.
+- Cross-repository dependency investigation.
+- Additional open-weight model support.
+- Local report archives.
+- Automated identification of major architectural changes.
+
+These enhancements are outside the initial MVP unless implementation time permits.
+
+---
+
+## 11. Risks and Mitigation
+
+| Risk | Impact | Mitigation |
+|---|---|---|
+| AI hallucinates historical explanations | Misleading conclusions | Require retrieved evidence and explicit uncertainty |
+| Large repositories take too long to process | Poor user experience | Apply file filters, limits, caching, and progress indicators |
+| GitHub API rate limits | Incomplete remote metadata | Cache responses, handle rate limits, and support local repositories |
+| Gemma requires substantial hardware resources | Users may be unable to run the model | Document hardware requirements and support compatible model configurations |
+| Repository contains secrets | Sensitive information may be exposed | Filter sensitive data and avoid sending repository contents to external inference services in local mode |
+| Private repository access fails | Analysis cannot complete | Provide secure authorization and clear access errors |
+| Render deployment conflicts with local-first privacy | Source code may be sent to a remote service | Keep inference local or clearly separate optional hosted functionality |
+| Missing historical records | Incomplete conclusions | Show data coverage and distinguish facts from hypotheses |
+| Malicious repository content manipulates the AI | Unsafe or misleading responses | Treat retrieved content as untrusted data and validate model outputs |
+
+---
+
+## 12. Acceptance Criteria
+
+The initial release will be considered successful when:
+
+1. A user can submit an accessible GitHub repository or select a local Git repository.
+2. The application can extract and display available commit history.
+3. The system can process source files and relevant repository metadata.
+4. The user can ask natural-language questions about the repository.
+5. The configured local Gemma model can generate responses using retrieved repository context.
+6. Answers provide supporting source references whenever relevant evidence is available.
+7. The system clearly communicates when it cannot determine an answer.
+8. The application can identify potential unfinished work from available repository records.
+9. The system can generate and export an unfinished-business report.
+10. The application handles missing data, inaccessible repositories, and model failures gracefully.
+11. Local mode does not silently transmit repository contents to an external AI inference service.
+12. The application provides setup instructions and a reproducible demonstration.
+
+---
+
+## 13. Conclusion
+
+The Dead Code Séance aims to make software archaeology accessible through open-weight AI. By examining repository history, source code, and available discussions, the application helps developers recover technical context that might otherwise be lost when projects become inactive or unfamiliar.
+
+Its defining feature is an AI assistant that answers questions about a repository while linking its conclusions to verifiable evidence. Local Gemma inference supports the project's privacy and open-innovation goals, while the unfinished-business report helps turn historical analysis into actionable maintenance recommendations.
+
+The initial release will focus on repository ingestion, evidence-grounded conversation, commit timelines, and report generation. These features provide a practical foundation for a distinctive Hacktoberfest submission that combines software history, local AI, and open-source preservation.
