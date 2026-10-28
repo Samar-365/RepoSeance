@@ -19,3 +19,9 @@ backend/data/
 .vscode/
 *.swp
 *~
+
+# Frontend Node & Build
+frontend/node_modules/
+frontend/dist/
+.DS_Store
+

@@ -1,0 +1,233 @@
+/* ==========================================================================
+   The Dead Code Séance — Gothic Software Archaeology Theme
+   ========================================================================== */
+
+:root {
+  --font-serif: 'Cinzel', Georgia, serif;
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Colors */
+  --bg-void: #06070a;
+  --bg-crypt: #0b0e14;
+  --bg-surface: #121620;
+  --bg-surface-elevated: #181d2a;
+  --bg-glass: rgba(18, 22, 32, 0.75);
+  
+  --border-dim: #1f2533;
+  --border-medium: #2a3345;
+  --border-bright: #3b4760;
+
+  /* Spectral Accents */
+  --spectral-teal: #00f5c4;
+  --spectral-teal-glow: rgba(0, 245, 196, 0.25);
+  --spectral-cyan: #00d2ff;
+  --spectral-amethyst: #a855f7;
+  --spectral-amethyst-glow: rgba(168, 85, 247, 0.25);
+  --ancient-amber: #ffaa40;
+  --ancient-amber-glow: rgba(255, 170, 64, 0.2);
+  --blood-crimson: #ff4766;
+
+  /* Text */
+  --text-primary: #f0f3fa;
+  --text-secondary: #9aa5bc;
+  --text-muted: #5e6b82;
+
+  --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-spectral: 0 0 25px rgba(0, 245, 196, 0.15);
+  --shadow-amethyst: 0 0 30px rgba(168, 85, 247, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(0, 245, 196, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 85% 75%, rgba(168, 85, 247, 0.04) 0%, transparent 45%),
+    linear-gradient(180deg, #06070a 0%, #0a0d13 100%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Atmospheric Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-void);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--spectral-teal);
+}
+
+/* Animations */
+@keyframes ghostFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes spectralPulse {
+  0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 10px rgba(0, 245, 196, 0.4)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 20px rgba(0, 245, 196, 0.8)); }
+}
+
+@keyframes shimmerGlow {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.spectral-glow {
+  animation: spectralPulse 4s ease-in-out infinite;
+}
+
+.ghost-float {
+  animation: ghostFloat 5s ease-in-out infinite;
+}
+
+/* Typography Helpers */
+h1, h2, h3, h4, .font-gothic {
+  font-family: var(--font-serif);
+  letter-spacing: 0.03em;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Glass Panels */
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-dim);
+  border-radius: 12px;
+  box-shadow: var(--shadow-subtle);
+  transition: all 0.25s ease;
+}
+
+.glass-panel:hover {
+  border-color: var(--border-medium);
+}
+
+.glass-panel-interactive:hover {
+  border-color: var(--spectral-teal);
+  box-shadow: var(--shadow-spectral);
+  transform: translateY(-2px);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  font-family: var(--font-sans);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, rgba(0, 245, 196, 0.9) 0%, rgba(0, 180, 219, 0.9) 100%);
+  color: #06090e;
+  font-weight: 600;
+  box-shadow: 0 0 15px var(--spectral-teal-glow);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #00f5c4 0%, #00d2ff 100%);
+  box-shadow: 0 0 25px rgba(0, 245, 196, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  border-color: var(--border-dim);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-medium);
+  color: #ffffff;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.badge-teal {
+  background: rgba(0, 245, 196, 0.1);
+  color: var(--spectral-teal);
+  border-color: rgba(0, 245, 196, 0.25);
+}
+
+.badge-amber {
+  background: rgba(255, 170, 64, 0.1);
+  color: var(--ancient-amber);
+  border-color: rgba(255, 170, 64, 0.25);
+}
+
+.badge-amethyst {
+  background: rgba(168, 85, 247, 0.1);
+  color: var(--spectral-amethyst);
+  border-color: rgba(168, 85, 247, 0.25);
+}
+
+.badge-crimson {
+  background: rgba(255, 71, 102, 0.1);
+  color: var(--blood-crimson);
+  border-color: rgba(255, 71, 102, 0.25);
+}
+
+/* Inputs */
+.input-field {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.input-field:focus {
+  border-color: var(--spectral-teal);
+  box-shadow: 0 0 12px var(--spectral-teal-glow);
+}

@@ -142,32 +142,32 @@ Using SQLite with FTS5 (Full-Text Search) to ensure zero heavy external dependen
   - Support Markdown and JSON export.
 
 ### Phase 3: Atmospheric Gothic Frontend (React + Vite)
-- [ ] Step 3.1: Frontend Setup & Gothic Design System
+- [x] Step 3.1: Frontend Setup & Gothic Design System
   - Initialize Vite React project (npm create vite@latest frontend -- --template react).
   - Configure index.css with dark theme:
     - Deep void obsidian backgrounds (#0a0b0e, #12141a)
     - Ethereal spectral cyan / teal glows (#4ef2bb, #00e5ff)
     - Ancient amber / parchment accents (#d4af37, #ffaa40)
     - Clean typography (Cinzel / Syne / Space Grotesk via Google Fonts).
-- [ ] Step 3.2: Summoning Chamber (Landing & Input)
+- [x] Step 3.2: Summoning Chamber (Landing & Input)
   - Repository URL / local folder path input with live validation.
   - Live local inference status pill (e.g., Ollama: Gemma 2 Connected).
   - Atmospheric summoning animation during repository ingestion.
-- [ ] Step 3.3: Séance Chat & Evidence Drawer
+- [x] Step 3.3: Séance Chat & Evidence Drawer
   - Interactive chat interface displaying the ghost's voice.
   - Interactive evidence badges embedded directly into message bubbles.
   - Side drawer or modal allowing users to inspect the underlying commit diff or source file.
-- [ ] Step 3.4: Ghost Timeline & Unfinished Business Vault
+- [x] Step 3.4: Ghost Timeline & Unfinished Business Vault
   - Visual milestone timeline highlighting significant architectural inflection points.
   - Filterable Unfinished Work table with severity flags (High/Medium/Low).
-- [ ] Step 3.5: Report Viewer & Exporter
+- [x] Step 3.5: Report Viewer & Exporter
   - Render Markdown report with copy-to-clipboard and .md / .json download actions.
 
 ### Phase 4: Integration, Testing & Hacktoberfest Polish
-- [ ] Step 4.1: End-to-End Testing
+- [x] Step 4.1: End-to-End Testing
   - Test with small open-source repositories and local test fixtures.
   - Verify error handling for invalid repos, rate limits, and unreachable Ollama instances.
-- [ ] Step 4.2: Documentation & Demo Assets
+- [x] Step 4.2: Documentation & Demo Assets
   - Create comprehensive README.md with quickstart instructions (git clone, pip install, npm run dev, ollama run gemma2:2b).
   - Add demo screenshots, sample exported resurrection reports, and architecture diagrams.
 
