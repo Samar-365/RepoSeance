@@ -1,0 +1,181 @@
+# Implementation Plan: The Dead Code Séance
+
+An AI-powered software archaeology tool built for Hacktoberfest 2026: Ghost in the Machine. The Dead Code Séance resurrects the context of abandoned, legacy, or unfamiliar Git repositories using local Gemma models, Git history extraction, and verifiable evidence grounding.
+
+---
+
+## 1. System Architecture Overview
+
+Frontend: React + Vite (Gothic Dark Aesthetic)
+        │
+        ▼ (REST API)
+Backend: Flask Application
+        │
+        ├── Ingestion & Processing
+        │     ├── GitEngine (GitPython / Local Repos)
+        │     ├── GHEngine (GitHub REST API / Remote)
+        │     └── Code Scanner (TODO/FIXME/Markers)
+        │
+        ├── Storage & Retrieval
+        │     ├── SQLite + FTS5 Full-Text Search
+        │     └── Evidence Retrieval Engine
+        │
+        └── AI Inference Engine
+              ├── Séance AI Service
+              ├── Local Gemma Inference (Ollama)
+              └── Ghost Persona & Citation Validator
+
+---
+
+## 2. Directory Structure
+
+RepoSeance/
+├── srs.txt                             # Software Requirements Specification
+├── implementation_plan.txt             # Implementation Plan
+├── README.md                           # Project documentation & setup instructions
+├── backend/
+│   ├── app.py                          # Application entry point & Flask factory
+│   ├── config.py                       # Configuration (DB paths, Ollama settings, limits)
+│   ├── requirements.txt                # Python dependencies
+│   ├── database/
+│   │   ├── __init__.py
+│   │   ├── connection.py               # SQLite connection helper & FTS5 init
+│   │   └── schema.sql                  # Database tables, triggers, and indices
+│   ├── collectors/
+│   │   ├── __init__.py
+│   │   ├── git_collector.py            # GitPython wrapper for commit logs, diffs, branches
+│   │   ├── github_collector.py         # Remote API fetcher for issues & PRs
+│   │   └── code_scanner.py             # TODO/FIXME scanner & file tree analyzer
+│   ├── indexing/
+│   │   ├── __init__.py
+│   │   └── retriever.py                # FTS5 full-text & keyword evidence retriever
+│   ├── ai/
+│   │   ├── __init__.py
+│   │   ├── ollama_client.py            # Local Ollama client & model health checker
+│   │   ├── prompts.py                  # Séance ghost persona, grounding & anti-hallucination prompts
+│   │   └── validator.py                # Evidence citation checker & structured output parser
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── analysis_service.py         # Ingestion coordinator & background task runner
+│   │   └── report_service.py           # Resurrection plan & Markdown/JSON report builder
+│   └── routes/
+│       ├── __init__.py
+│       ├── repositories.py             # Ingestion & metadata routes (/api/repositories)
+│       ├── timeline.py                 # Commit history routes (/api/repositories/<id>/timeline)
+│       ├── unfinished.py               # Incomplete work routes (/api/repositories/<id>/unfinished)
+│       ├── chat.py                     # Séance conversation routes (/api/repositories/<id>/chat)
+│       └── reports.py                  # Report generation & export (/api/repositories/<id>/report)
+└── frontend/
+    ├── package.json
+    ├── vite.config.js
+    ├── index.html
+    └── src/
+        ├── index.css                   # Gothic design tokens, custom scrollbars, glowing accents
+        ├── App.jsx                     # Route coordinator & layout frame
+        ├── api/
+        │   └── client.js               # Axios/Fetch API wrapper with error handling
+        ├── components/
+        │   ├── Navbar.jsx              # Atmospheric header with Ollama status badge
+        │   ├── EvidenceCard.jsx        # Clickable source quote/diff inspector
+        │   ├── StatusBadge.jsx         # Pipeline stage badges (Summoning, Analyzing, Ready)
+        │   └── Modal.jsx               # Detail popout for commits & diffs
+        └── views/
+            ├── SummonView.jsx          # Repository input (Local path or GitHub URL)
+            ├── DashboardView.jsx       # Repository health overview & key statistics
+            ├── SeanceChatView.jsx      # Conversational interface with the Repository Ghost
+            ├── GhostTimelineView.jsx   # Chronological commit visualizer with filters
+            ├── UnfinishedView.jsx      # Vault of TODOs, unresolved PRs, and dangling tasks
+            └── ReportView.jsx          # Resurrection Plan & Markdown/JSON export viewer
+
+---
+
+## 3. Database Schema (schema.sql)
+
+Using SQLite with FTS5 (Full-Text Search) to ensure zero heavy external dependencies while delivering millisecond evidence retrieval:
+
+1. repositories:
+   id, name, source_type (local/remote), path_or_url, default_branch, total_commits, status (pending, analyzing, ready, failed), error_message, created_at, analyzed_at.
+2. commits:
+   id, repository_id, commit_hash, author_name, author_email, committed_at, message, files_changed_count, insertions, deletions, is_significant.
+3. issues_prs:
+   id, repository_id, type (issue/pr), number, title, body, state (open/closed/merged), author, created_at, closed_at, url.
+4. unfinished_items:
+   id, repository_id, category (todo, fixme, open_issue, abandoned_branch, dangling_doc), title, file_path, line_number, snippet, severity.
+5. evidence_fts (Virtual FTS5 Table):
+   Indexed fields for commits, file diff excerpts, documentation, and issue discussions to enable rapid context retrieval during chat.
+6. reports:
+   id, repository_id, report_type (resurrection_plan, full_audit), content_markdown, content_json, created_at.
+
+---
+
+## 4. Implementation Phases & Milestones
+
+### Phase 1: Core Backend & Ingestion Engine (MVP Foundation)
+- [x] Step 1.1: Environment & Project Scaffolding
+  - Create Python virtual environment setup and requirements.txt (flask, flask-cors, gitpython, requests, pydantic).
+  - Implement SQLite database initialization script with tables and FTS5 indices.
+- [x] Step 1.2: Repository Collectors
+  - Build git_collector.py using GitPython to parse commits, diff stats, author timeline, and branches.
+  - Build code_scanner.py with regex scrapers for TODO, FIXME, HACK, BUG, XXX with line numbers and context snippets.
+  - Build github_collector.py to optionally pull remote public issues/PRs with rate-limit guards.
+- [x] Step 1.3: Evidence Indexer
+  - Populate FTS5 evidence virtual table during ingestion.
+  - Implement keyword and boolean search for commit messages, issue titles, and code snippets.
+- [x] Step 1.4: REST API Endpoints
+  - Implement /api/health, /api/repositories/analyze, /api/repositories, /api/repositories/<id>, and /api/repositories/<id>/timeline.
+
+### Phase 2: Local AI Séance Engine & Report Generator
+- [ ] Step 2.1: Ollama / Gemma Inference Client
+  - Build ollama_client.py connecting to http://localhost:11434 with model availability checks (e.g., gemma2:2b, gemma2:9b).
+  - Add fallback mock/simulated mode for development when Ollama is offline.
+- [ ] Step 2.2: Ghost Persona & Evidence Grounding
+  - Craft system prompt establishing the "Repository Ghost" persona: gothic, insightful, atmospheric, yet strictly grounded.
+  - Implement anti-hallucination rule: explicitly mandate quoting evidence tags ([Commit <hash>], [Issue #<num>], [File <path>:<line>]).
+  - Return formatted evidence citations alongside the assistant's response.
+- [ ] Step 2.3: Resurrection Plan & Report Generation
+  - Implement /api/repositories/<id>/report endpoint.
+  - Generate automated reports synthesizing:
+    1. Historical trajectory & original intent.
+    2. Abandonment analysis & recurring bug hotspots.
+    3. Categorized unfinished business.
+    4. Step-by-step Revival Checklist.
+  - Support Markdown and JSON export.
+
+### Phase 3: Atmospheric Gothic Frontend (React + Vite)
+- [ ] Step 3.1: Frontend Setup & Gothic Design System
+  - Initialize Vite React project (npm create vite@latest frontend -- --template react).
+  - Configure index.css with dark theme:
+    - Deep void obsidian backgrounds (#0a0b0e, #12141a)
+    - Ethereal spectral cyan / teal glows (#4ef2bb, #00e5ff)
+    - Ancient amber / parchment accents (#d4af37, #ffaa40)
+    - Clean typography (Cinzel / Syne / Space Grotesk via Google Fonts).
+- [ ] Step 3.2: Summoning Chamber (Landing & Input)
+  - Repository URL / local folder path input with live validation.
+  - Live local inference status pill (e.g., Ollama: Gemma 2 Connected).
+  - Atmospheric summoning animation during repository ingestion.
+- [ ] Step 3.3: Séance Chat & Evidence Drawer
+  - Interactive chat interface displaying the ghost's voice.
+  - Interactive evidence badges embedded directly into message bubbles.
+  - Side drawer or modal allowing users to inspect the underlying commit diff or source file.
+- [ ] Step 3.4: Ghost Timeline & Unfinished Business Vault
+  - Visual milestone timeline highlighting significant architectural inflection points.
+  - Filterable Unfinished Work table with severity flags (High/Medium/Low).
+- [ ] Step 3.5: Report Viewer & Exporter
+  - Render Markdown report with copy-to-clipboard and .md / .json download actions.
+
+### Phase 4: Integration, Testing & Hacktoberfest Polish
+- [ ] Step 4.1: End-to-End Testing
+  - Test with small open-source repositories and local test fixtures.
+  - Verify error handling for invalid repos, rate limits, and unreachable Ollama instances.
+- [ ] Step 4.2: Documentation & Demo Assets
+  - Create comprehensive README.md with quickstart instructions (git clone, pip install, npm run dev, ollama run gemma2:2b).
+  - Add demo screenshots, sample exported resurrection reports, and architecture diagrams.
+
+---
+
+## 5. Verification & Acceptance Criteria
+
+1. Local Isolation: Ingestion and local chat must execute without sending repository code to any third-party remote API.
+2. Citation Verifiability: At least 90% of factual assertions made by the AI chat must correlate with clickable evidence items stored in SQLite.
+3. Graceful Fallbacks: If Ollama is not running, the application must display clear setup instructions rather than crashing, while continuing to serve the timeline, unfinished business scan, and metadata.
+4. Export Readiness: User can download a structured Resurrection Plan with one click.

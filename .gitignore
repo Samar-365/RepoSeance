@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# RepoSeance Data & Clones
+backend/data/*.db
+backend/data/clones/
+backend/data/
+
+# Environment & IDE
+.env
+.idea/
+.vscode/
+*.swp
+*~
