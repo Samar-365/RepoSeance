@@ -125,14 +125,14 @@ Using SQLite with FTS5 (Full-Text Search) to ensure zero heavy external dependen
   - Implement /api/health, /api/repositories/analyze, /api/repositories, /api/repositories/<id>, and /api/repositories/<id>/timeline.
 
 ### Phase 2: Local AI Séance Engine & Report Generator
-- [ ] Step 2.1: Ollama / Gemma Inference Client
+- [x] Step 2.1: Ollama / Gemma Inference Client
   - Build ollama_client.py connecting to http://localhost:11434 with model availability checks (e.g., gemma2:2b, gemma2:9b).
   - Add fallback mock/simulated mode for development when Ollama is offline.
-- [ ] Step 2.2: Ghost Persona & Evidence Grounding
+- [x] Step 2.2: Ghost Persona & Evidence Grounding
   - Craft system prompt establishing the "Repository Ghost" persona: gothic, insightful, atmospheric, yet strictly grounded.
   - Implement anti-hallucination rule: explicitly mandate quoting evidence tags ([Commit <hash>], [Issue #<num>], [File <path>:<line>]).
   - Return formatted evidence citations alongside the assistant's response.
-- [ ] Step 2.3: Resurrection Plan & Report Generation
+- [x] Step 2.3: Resurrection Plan & Report Generation
   - Implement /api/repositories/<id>/report endpoint.
   - Generate automated reports synthesizing:
     1. Historical trajectory & original intent.

@@ -6,6 +6,8 @@ from backend.database.connection import init_db
 from backend.routes.repositories import repositories_bp
 from backend.routes.timeline import timeline_bp
 from backend.routes.unfinished import unfinished_bp
+from backend.routes.chat import chat_bp
+from backend.routes.reports import reports_bp
 
 def create_app() -> Flask:
     """Application factory for The Dead Code Séance backend."""
@@ -19,6 +21,8 @@ def create_app() -> Flask:
     app.register_blueprint(repositories_bp)
     app.register_blueprint(timeline_bp)
     app.register_blueprint(unfinished_bp)
+    app.register_blueprint(chat_bp)
+    app.register_blueprint(reports_bp)
 
     @app.route("/api/health", methods=["GET"])
     def health_check():
