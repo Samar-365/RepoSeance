@@ -139,7 +139,7 @@ export default function MarkdownViewer({ content, onCitationClick, className = "
     if (line.startsWith("# ")) {
       flushList(index);
       rendered.push(
-        <h1 key={index} className="font-gothic" style={{ fontSize: "1.7rem", marginTop: 24, marginBottom: 12 }}>
+        <h1 key={index} style={{ fontSize: "1.4rem", fontWeight: 700, marginTop: 18, marginBottom: 10 }}>
           {line.replace("# ", "")}
         </h1>
       );
@@ -148,7 +148,7 @@ export default function MarkdownViewer({ content, onCitationClick, className = "
     if (line.startsWith("## ")) {
       flushList(index);
       rendered.push(
-        <h2 key={index} className="font-gothic" style={{ fontSize: "1.35rem", marginTop: 20, marginBottom: 10, borderBottom: "1px solid var(--border-subtle)", paddingBottom: 6 }}>
+        <h2 key={index} style={{ fontSize: "1.2rem", fontWeight: 600, marginTop: 16, marginBottom: 8, borderBottom: "1px solid var(--border-subtle)", paddingBottom: 4 }}>
           {line.replace("## ", "")}
         </h2>
       );
@@ -157,7 +157,7 @@ export default function MarkdownViewer({ content, onCitationClick, className = "
     if (line.startsWith("### ")) {
       flushList(index);
       rendered.push(
-        <h3 key={index} className="font-gothic" style={{ fontSize: "1.15rem", marginTop: 16, marginBottom: 8, color: "var(--spectral-teal)" }}>
+        <h3 key={index} style={{ fontSize: "1.05rem", fontWeight: 600, marginTop: 14, marginBottom: 6, color: "var(--accent-primary)" }}>
           {line.replace("### ", "")}
         </h3>
       );

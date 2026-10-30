@@ -1,20 +1,21 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Skull, Send, Sparkles, GitCommit, FileCode, AlertCircle, Loader2, BookOpen, X, Copy, Check, ChevronRight } from "lucide-react";
+import { Ghost, Send, Loader2, BookOpen, X, Copy, Check } from "lucide-react";
 import { seanceChat } from "../api/client";
 import MarkdownViewer from "../components/MarkdownViewer";
+import MinimalGhostBackground from "../components/MinimalGhostBackground";
 
 const SUGGESTIONS = [
-  "What was the original design intent of this repository?",
-  "What was the last recorded commit or architectural change?",
-  "What features or tasks appear unfinished or abandoned?",
-  "Are there recurring bug patterns or technical debts in the record?"
+  "What is the main purpose of this repository?",
+  "What was the last major change?",
+  "What tasks or features appear unfinished?",
+  "Are there recurring bugs or technical debts?"
 ];
 
 export default function SeanceChatView({ repository, onInspectEvidence }) {
   const [messages, setMessages] = useState([
     {
       sender: "ghost",
-      text: `Greetings, traveler of the code. I am the surviving memory of **${repository.name}**.\n\nInquire of what transpired within these commits, and I shall answer with strict grounding from surviving git logs and code markers.`,
+      text: `Hello. I have indexed the commit history and files for **${repository.name}**. Ask me any question about the architecture, past decisions, or unfinished tasks.`,
       evidence: [],
       citations: [],
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -50,23 +51,20 @@ export default function SeanceChatView({ repository, onInspectEvidence }) {
         sender: "ghost",
         text: data.response,
         model: data.model,
-        simulated: data.simulated,
         evidence: data.evidence || [],
         citations: data.citations || [],
         durationMs: data.duration_ms,
-        grounding: data.grounding,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages((prev) => [...prev, ghostMsg]);
 
-      // If response has evidence, select the first one as active relic
       if (data.evidence && data.evidence.length > 0) {
         setActiveRelic(data.evidence[0]);
       }
     } catch (err) {
       const errorMsg = {
         sender: "ghost",
-        text: `*The spiritual connection flickers...* Failed to query the séance oracle: ${err.message}`,
+        text: `Error querying model: ${err.message}`,
         evidence: [],
         citations: [],
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -78,7 +76,6 @@ export default function SeanceChatView({ repository, onInspectEvidence }) {
   };
 
   const handleCitationClick = (citation) => {
-    // Find matching evidence from the current message history or fallback to citation details
     for (let i = messages.length - 1; i >= 0; i--) {
       const msg = messages[i];
       if (msg.evidence) {
@@ -93,12 +90,11 @@ export default function SeanceChatView({ repository, onInspectEvidence }) {
       }
     }
 
-    // Default relic representation
     setActiveRelic({
       source_type: citation.type,
       source_identifier: citation.identifier,
-      source_location: "Cited Repository Record",
-      content_excerpt: `Referenced Artifact: ${citation.raw}\n\nThis artifact was cited by the Ghost during the séance. You can investigate its occurrence in the Stratigraphy Timeline or Unfinished Vault.`
+      source_location: "Cited Record",
+      content_excerpt: `Referenced artifact: ${citation.raw}`
     });
   };
 
@@ -110,18 +106,19 @@ export default function SeanceChatView({ repository, onInspectEvidence }) {
   };
 
   return (
-    <div style={{ maxWidth: 1440, margin: "20px auto", height: "calc(100vh - 100px)", display: "flex", gap: 16, padding: "0 20px" }}>
-      {/* Primary Chat Chamber */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", height: "100%", minWidth: 0 }}>
-        {/* Messages Stream */}
-        <div className="glass-panel" style={{
+    <div style={{ position: "relative", height: "calc(100vh - 64px)", padding: "16px 20px", display: "flex", gap: 14 }}>
+      <MinimalGhostBackground />
+
+      {/* Main Chat Stream */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", height: "100%", minWidth: 0, position: "relative", zIndex: 1 }}>
+        <div className="card" style={{
           flex: 1,
           overflowY: "auto",
-          padding: 24,
-          marginBottom: 14,
+          padding: 20,
+          marginBottom: 12,
           display: "flex",
           flexDirection: "column",
-          gap: 20
+          gap: 16
         }}>
           {messages.map((msg, idx) => (
             <div
@@ -130,7 +127,7 @@ export default function SeanceChatView({ repository, onInspectEvidence }) {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
-                maxWidth: msg.sender === "user" ? "75%" : "88%",
+                maxWidth: msg.sender === "user" ? "80%" : "88%",
                 alignSelf: msg.sender === "user" ? "flex-end" : "flex-start"
               }}
             >
@@ -138,26 +135,25 @@ export default function SeanceChatView({ repository, onInspectEvidence }) {
               <div style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 8,
-                marginBottom: 6,
-                fontSize: "0.76rem",
+                gap: 6,
+                marginBottom: 5,
+                fontSize: "0.75rem",
                 color: "var(--text-muted)"
               }}>
                 {msg.sender === "ghost" ? (
                   <>
                     <div style={{
-                      width: 22,
-                      height: 22,
-                      borderRadius: "50%",
-                      background: "rgba(0, 245, 196, 0.15)",
+                      width: 18,
+                      height: 18,
+                      borderRadius: 4,
+                      background: "var(--accent-primary-dim)",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      border: "1px solid rgba(0, 245, 196, 0.3)"
+                      justifyContent: "center"
                     }}>
-                      <Skull size={12} color="var(--spectral-teal)" />
+                      <Ghost size={11} color="var(--accent-primary)" />
                     </div>
-                    <span style={{ color: "var(--spectral-teal)", fontWeight: 600 }}>Repository Ghost</span>
+                    <span style={{ color: "var(--accent-primary)", fontWeight: 600 }}>Assistant</span>
                     {msg.model && (
                       <span className="font-mono" style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
                         • {msg.model} {msg.durationMs ? `(${msg.durationMs}ms)` : ""}
@@ -170,19 +166,12 @@ export default function SeanceChatView({ repository, onInspectEvidence }) {
                 <span>• {msg.time}</span>
               </div>
 
-              {/* Message Body */}
+              {/* Message Box */}
               <div style={{
-                padding: "16px 20px",
-                borderRadius: 12,
-                background: msg.sender === "user"
-                  ? "linear-gradient(135deg, rgba(0, 245, 196, 0.15) 0%, rgba(0, 210, 255, 0.15) 100%)"
-                  : "rgba(16, 21, 31, 0.8)",
-                border: msg.sender === "user"
-                  ? "1px solid rgba(0, 245, 196, 0.3)"
-                  : "1px solid var(--border-dim)",
-                boxShadow: msg.sender === "user"
-                  ? "0 4px 15px rgba(0, 245, 196, 0.08)"
-                  : "0 4px 20px rgba(0,0,0,0.3)",
+                padding: "12px 16px",
+                borderRadius: 8,
+                background: msg.sender === "user" ? "var(--accent-primary-dim)" : "var(--bg-card)",
+                border: msg.sender === "user" ? "1px solid rgba(56, 189, 248, 0.3)" : "1px solid var(--border-subtle)",
                 color: "var(--text-primary)",
                 width: "100%"
               }}>
@@ -192,38 +181,38 @@ export default function SeanceChatView({ repository, onInspectEvidence }) {
                     onCitationClick={handleCitationClick} 
                   />
                 ) : (
-                  <div style={{ fontSize: "0.95rem", lineHeight: 1.5 }}>
+                  <div style={{ fontSize: "0.9rem", lineHeight: 1.5 }}>
                     {msg.text}
                   </div>
                 )}
 
-                {/* Evidence Artifacts Carousel / List */}
+                {/* Evidence Artifacts Bar */}
                 {msg.evidence && msg.evidence.length > 0 && (
                   <div style={{
-                    marginTop: 16,
-                    paddingTop: 12,
+                    marginTop: 12,
+                    paddingTop: 10,
                     borderTop: "1px solid var(--border-subtle)"
                   }}>
-                    <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
-                      <BookOpen size={13} color="var(--spectral-teal)" />
-                      <span>Retrieved Evidence Relics ({msg.evidence.length})</span>
+                    <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginBottom: 6, display: "flex", alignItems: "center", gap: 5 }}>
+                      <BookOpen size={12} color="var(--accent-primary)" />
+                      <span>Retrieved Evidence ({msg.evidence.length})</span>
                     </div>
 
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                       {msg.evidence.map((ev, evIdx) => (
                         <button
                           key={evIdx}
                           onClick={() => setActiveRelic(ev)}
                           className="btn btn-ghost"
                           style={{
-                            padding: "4px 10px",
-                            fontSize: "0.75rem",
-                            borderRadius: 6,
-                            background: activeRelic === ev ? "rgba(0, 245, 196, 0.15)" : "rgba(255, 255, 255, 0.03)",
-                            borderColor: activeRelic === ev ? "var(--spectral-teal)" : "var(--border-subtle)"
+                            padding: "3px 8px",
+                            fontSize: "0.74rem",
+                            borderRadius: 4,
+                            background: activeRelic === ev ? "var(--accent-primary-dim)" : "transparent",
+                            borderColor: activeRelic === ev ? "var(--accent-primary)" : "var(--border-subtle)"
                           }}
                         >
-                          <span className="font-mono" style={{ color: "var(--spectral-teal)" }}>
+                          <span className="font-mono" style={{ color: "var(--accent-primary)" }}>
                             {ev.source_identifier}
                           </span>
                         </button>
@@ -236,19 +225,17 @@ export default function SeanceChatView({ repository, onInspectEvidence }) {
           ))}
 
           {loading && (
-            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: 12, color: "var(--spectral-teal)" }}>
-              <Loader2 size={18} className="ghost-float" />
-              <span style={{ fontSize: "0.85rem", fontStyle: "italic" }}>
-                Consulting the surviving commit strata with local Gemma AI...
-              </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: 8, color: "var(--accent-primary)", fontSize: "0.84rem" }}>
+              <Loader2 size={15} className="pulse-dot" />
+              <span>Searching repository evidence with local AI...</span>
             </div>
           )}
 
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Quick Suggestion Pills */}
-        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, marginBottom: 8 }}>
+        {/* Suggestion Pills */}
+        <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 6, marginBottom: 8 }}>
           {SUGGESTIONS.map((sug, idx) => (
             <button
               key={idx}
@@ -256,108 +243,106 @@ export default function SeanceChatView({ repository, onInspectEvidence }) {
               className="btn btn-ghost"
               disabled={loading}
               style={{
-                fontSize: "0.76rem",
-                padding: "4px 10px",
-                borderRadius: 16,
-                background: "rgba(255,255,255,0.02)",
+                fontSize: "0.75rem",
+                padding: "3px 9px",
+                borderRadius: 14,
                 whiteSpace: "nowrap"
               }}
             >
-              <Sparkles size={11} color="var(--spectral-teal)" />
               <span>{sug}</span>
             </button>
           ))}
         </div>
 
-        {/* Input Bar */}
-        <div style={{ display: "flex", gap: 10 }}>
+        {/* Input Field */}
+        <div style={{ display: "flex", gap: 8 }}>
           <input
             type="text"
             className="input-field"
-            placeholder="Ask the Repository Ghost about past decisions, bugs, or intentions..."
+            placeholder="Ask a question about the repository..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
             disabled={loading}
-            style={{ padding: "12px 18px", fontSize: "0.92rem" }}
           />
           <button
             onClick={() => handleSend()}
             className="btn btn-primary"
             disabled={loading || !input.trim()}
-            style={{ padding: "0 22px" }}
+            style={{ padding: "0 18px" }}
           >
-            <Send size={16} />
+            <Send size={15} />
           </button>
         </div>
       </div>
 
-      {/* Relic Codex / Live Evidence Inspector Drawer (Collapsible / Dynamic) */}
+      {/* Side Evidence Drawer */}
       {activeRelic && (
-        <div className="glass-panel" style={{
-          width: 380,
+        <div className="card" style={{
+          width: 360,
           display: "flex",
           flexDirection: "column",
-          borderRadius: 12,
+          borderRadius: 8,
           overflow: "hidden",
-          border: "1px solid var(--border-medium)"
+          position: "relative",
+          zIndex: 1
         }}>
           {/* Drawer Header */}
           <div style={{
-            padding: "14px 18px",
+            padding: "12px 16px",
             borderBottom: "1px solid var(--border-subtle)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            background: "rgba(0, 0, 0, 0.25)"
+            background: "rgba(0, 0, 0, 0.2)"
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <BookOpen size={16} color="var(--spectral-teal)" />
-              <span className="font-gothic" style={{ fontSize: "0.95rem", color: "#ffffff" }}>
-                Relic Codex
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <BookOpen size={14} color="var(--accent-primary)" />
+              <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#fff" }}>
+                Evidence Record
               </span>
             </div>
             
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
               <button
                 onClick={handleCopyRelic}
                 className="btn btn-ghost"
-                style={{ padding: "4px 8px", fontSize: "0.75rem" }}
-                title="Copy relic content"
+                style={{ padding: "3px 6px", fontSize: "0.72rem" }}
+                title="Copy snippet"
               >
-                {copied ? <Check size={13} color="var(--spectral-teal)" /> : <Copy size={13} />}
+                {copied ? <Check size={12} color="var(--accent-success)" /> : <Copy size={12} />}
               </button>
               <button
                 onClick={() => setActiveRelic(null)}
                 className="btn btn-ghost"
-                style={{ padding: "4px 8px" }}
+                style={{ padding: "3px 6px" }}
               >
-                <X size={14} />
+                <X size={13} />
               </button>
             </div>
           </div>
 
-          {/* Drawer Body */}
-          <div style={{ padding: 18, overflowY: "auto", flex: 1 }}>
-            <div style={{ marginBottom: 12 }}>
-              <span className="badge badge-teal" style={{ marginBottom: 6 }}>
-                {activeRelic.source_type?.toUpperCase() || "RELIC"}
+          {/* Drawer Content */}
+          <div style={{ padding: 16, overflowY: "auto", flex: 1 }}>
+            <div style={{ marginBottom: 10 }}>
+              <span className="badge badge-blue" style={{ marginBottom: 4 }}>
+                {activeRelic.source_type?.toUpperCase()}
               </span>
-              <div className="font-mono" style={{ fontSize: "0.82rem", color: "#ffffff", fontWeight: 600, wordBreak: "break-all" }}>
+              <div className="font-mono" style={{ fontSize: "0.8rem", color: "#fff", fontWeight: 600, wordBreak: "break-all" }}>
                 {activeRelic.source_identifier}
               </div>
-              <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: 2 }}>
-                Location: {activeRelic.source_location || "Repository index"}
+              <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 2 }}>
+                {activeRelic.source_location}
               </div>
             </div>
 
             <pre className="font-mono" style={{
-              background: "#080a10",
-              padding: 14,
-              borderRadius: 8,
+              background: "#06080c",
+              padding: 12,
+              borderRadius: 6,
               border: "1px solid var(--border-subtle)",
-              fontSize: "0.78rem",
-              lineHeight: 1.55,
+              fontSize: "0.76rem",
+              lineHeight: 1.5,
               color: "#cbd5e1",
               whiteSpace: "pre-wrap",
               wordBreak: "break-word"
@@ -366,14 +351,13 @@ export default function SeanceChatView({ repository, onInspectEvidence }) {
             </pre>
           </div>
 
-          {/* Modal Popout Action */}
-          <div style={{ padding: "12px 18px", borderTop: "1px solid var(--border-subtle)", background: "rgba(0,0,0,0.2)" }}>
+          <div style={{ padding: "10px 16px", borderTop: "1px solid var(--border-subtle)" }}>
             <button
               onClick={() => onInspectEvidence(activeRelic)}
               className="btn btn-ghost"
-              style={{ width: "100%", fontSize: "0.78rem" }}
+              style={{ width: "100%", fontSize: "0.76rem" }}
             >
-              Expand into Full Inspection Modal
+              Expand Full Modal
             </button>
           </div>
         </div>

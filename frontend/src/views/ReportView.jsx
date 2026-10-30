@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { ScrollText, Download, Copy, Check, RefreshCw, Loader2, FileDown, BookOpen, Sparkles } from "lucide-react";
+import { FileText, Download, Copy, Check, RefreshCw, Loader2, FileDown } from "lucide-react";
 import { getReport, generateReport } from "../api/client";
 import MarkdownViewer from "../components/MarkdownViewer";
+import MinimalGhostBackground from "../components/MinimalGhostBackground";
 
 export default function ReportView({ repository, onInspectEvidence }) {
   const [report, setReport] = useState(null);
@@ -57,7 +58,7 @@ export default function ReportView({ repository, onInspectEvidence }) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${repository.name}_resurrection_report.md`;
+    link.download = `${repository.name}_analysis_report.md`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -69,7 +70,7 @@ export default function ReportView({ repository, onInspectEvidence }) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${repository.name}_resurrection_data.json`;
+    link.download = `${repository.name}_data.json`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -79,118 +80,102 @@ export default function ReportView({ repository, onInspectEvidence }) {
       onInspectEvidence({
         source_type: citation.type,
         source_identifier: citation.identifier,
-        source_location: "Cited in Resurrection Report",
-        content_excerpt: `Artifact: ${citation.raw}\n\nReferenced in Resurrection Scroll for ${repository.name}. Check Stratigraphy Timeline or Unfinished Vault to inspect full occurrence.`
+        source_location: "Cited in Report",
+        content_excerpt: `Artifact: ${citation.raw}\n\nReferenced in report for ${repository.name}.`
       });
     }
   };
 
   return (
-    <div style={{ maxWidth: 1080, margin: "24px auto", padding: "0 24px" }}>
-      {/* Header */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 28,
-        paddingBottom: 16,
-        borderBottom: "1px solid var(--border-subtle)",
-        flexWrap: "wrap",
-        gap: 16
-      }}>
-        <div>
-          <h1 className="font-gothic" style={{ fontSize: "1.9rem", color: "#ffffff", display: "flex", alignItems: "center", gap: 10 }}>
-            <ScrollText size={24} color="var(--spectral-amethyst)" />
-            The Resurrection Scroll
-          </h1>
-          <span style={{ fontSize: "0.84rem", color: "var(--text-muted)" }}>
-            Synthesized Software Archaeology Audit & Modern Revival Blueprint
-          </span>
-        </div>
+    <div style={{ position: "relative", minHeight: "calc(100vh - 64px)", padding: "28px 24px" }}>
+      <MinimalGhostBackground />
 
-        {/* Action Controls */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-          <button
-            onClick={handleGenerate}
-            className="btn btn-primary"
-            disabled={generating}
-            style={{ padding: "8px 16px", fontSize: "0.84rem" }}
-          >
-            {generating ? (
-              <>
-                <Loader2 size={15} className="ghost-float" /> Synthesizing with Gemma...
-              </>
-            ) : (
-              <>
-                <RefreshCw size={14} /> {report ? "Regenerate Scroll" : "Synthesize Scroll"}
-              </>
-            )}
-          </button>
-
-          {report && (
-            <>
-              <button onClick={handleCopy} className="btn btn-ghost" style={{ padding: "8px 12px", fontSize: "0.82rem" }}>
-                {copied ? <Check size={14} color="var(--spectral-teal)" /> : <Copy size={14} />}
-                {copied ? "Copied" : "Copy"}
-              </button>
-              <button onClick={handleDownloadMd} className="btn btn-ghost" style={{ padding: "8px 12px", fontSize: "0.82rem" }}>
-                <FileDown size={14} /> Markdown (.md)
-              </button>
-              <button onClick={handleDownloadJson} className="btn btn-ghost" style={{ padding: "8px 12px", fontSize: "0.82rem" }}>
-                <Download size={14} /> JSON (.json)
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Main Content Area */}
-      {loading ? (
-        <div style={{ textAlign: "center", padding: "60px 0", color: "var(--spectral-amethyst)" }}>
-          <Loader2 size={32} className="ghost-float" style={{ margin: "0 auto 12px" }} />
-          <div>Retrieving scroll records from database...</div>
-        </div>
-      ) : !report ? (
-        <div className="glass-panel" style={{ textAlign: "center", padding: "60px 24px" }}>
-          <div style={{
-            width: 60,
-            height: 60,
-            borderRadius: "50%",
-            background: "rgba(168, 85, 247, 0.12)",
-            border: "1px solid rgba(168, 85, 247, 0.3)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            margin: "0 auto 18px"
-          }}>
-            <ScrollText size={28} color="var(--spectral-amethyst)" />
+      <div style={{ maxWidth: 960, margin: "0 auto", position: "relative", zIndex: 1 }}>
+        {/* Header */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 20,
+          paddingBottom: 16,
+          borderBottom: "1px solid var(--border-subtle)",
+          flexWrap: "wrap",
+          gap: 12
+        }}>
+          <div>
+            <h1 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
+              <FileText size={20} color="var(--accent-ghost)" />
+              Analysis Report
+            </h1>
+            <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+              Structured architecture analysis and revival checklist
+            </span>
           </div>
 
-          <h2 className="font-gothic" style={{ fontSize: "1.4rem", color: "#ffffff", marginBottom: 8 }}>
-            No Resurrection Scroll Has Been Inscribed Yet
-          </h2>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <button
+              onClick={handleGenerate}
+              className="btn btn-primary"
+              disabled={generating}
+              style={{ padding: "6px 12px", fontSize: "0.8rem" }}
+            >
+              {generating ? (
+                <>
+                  <Loader2 size={13} className="pulse-dot" /> Generating...
+                </>
+              ) : (
+                <>
+                  <RefreshCw size={13} /> {report ? "Regenerate" : "Generate"}
+                </>
+              )}
+            </button>
 
-          <p style={{ color: "var(--text-secondary)", maxWidth: 520, margin: "0 auto 24px", lineHeight: 1.6, fontSize: "0.92rem" }}>
-            Command the local Gemma model to analyze the full repository evidence base, commit milestones, and unfinished markers to produce a comprehensive revival audit.
-          </p>
+            {report && (
+              <>
+                <button onClick={handleCopy} className="btn btn-ghost" style={{ padding: "6px 10px", fontSize: "0.78rem" }}>
+                  {copied ? <Check size={13} color="var(--accent-success)" /> : <Copy size={13} />}
+                  <span>{copied ? "Copied" : "Copy"}</span>
+                </button>
+                <button onClick={handleDownloadMd} className="btn btn-ghost" style={{ padding: "6px 10px", fontSize: "0.78rem" }}>
+                  <FileDown size={13} /> Markdown
+                </button>
+                <button onClick={handleDownloadJson} className="btn btn-ghost" style={{ padding: "6px 10px", fontSize: "0.78rem" }}>
+                  <Download size={13} /> JSON
+                </button>
+              </>
+            )}
+          </div>
+        </div>
 
-          <button onClick={handleGenerate} className="btn btn-primary" disabled={generating} style={{ padding: "10px 24px" }}>
-            {generating ? <Loader2 size={16} className="ghost-float" /> : <Sparkles size={16} />}
-            Inscribe Resurrection Report Now
-          </button>
-        </div>
-      ) : (
-        <div className="glass-panel" style={{
-          padding: 36,
-          background: "linear-gradient(180deg, rgba(16, 21, 31, 0.85) 0%, rgba(12, 16, 24, 0.95) 100%)",
-          border: "1px solid var(--border-medium)"
-        }}>
-          <MarkdownViewer 
-            content={report.content_markdown} 
-            onCitationClick={handleCitationClick} 
-          />
-        </div>
-      )}
+        {/* Content */}
+        {loading ? (
+          <div style={{ textAlign: "center", padding: "60px 0", color: "var(--accent-ghost)", fontSize: "0.86rem" }}>
+            <Loader2 size={24} className="pulse-dot" style={{ margin: "0 auto 8px" }} />
+            <div>Loading report...</div>
+          </div>
+        ) : !report ? (
+          <div className="card" style={{ textAlign: "center", padding: "48px 20px" }}>
+            <FileText size={32} color="var(--accent-ghost)" style={{ margin: "0 auto 12px", opacity: 0.6 }} />
+            <h2 style={{ fontSize: "1.1rem", fontWeight: 600, color: "#fff", marginBottom: 6 }}>
+              No Report Generated Yet
+            </h2>
+            <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem", maxWidth: 440, margin: "0 auto 16px" }}>
+              Synthesize a comprehensive report analyzing codebase history, technical debt, and next steps.
+            </p>
+            <button onClick={handleGenerate} className="btn btn-primary" disabled={generating} style={{ padding: "8px 18px" }}>
+              {generating ? <Loader2 size={14} className="pulse-dot" /> : <RefreshCw size={14} />}
+              Generate Report
+            </button>
+          </div>
+        ) : (
+          <div className="card" style={{ padding: 28 }}>
+            <MarkdownViewer 
+              content={report.content_markdown} 
+              onCitationClick={handleCitationClick} 
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
