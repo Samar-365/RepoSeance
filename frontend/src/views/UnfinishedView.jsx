@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { AlertOctagon, Filter, CheckCircle2, AlertTriangle, Bug, GitBranch, FileText, Loader2 } from "lucide-react";
+import { AlertOctagon, Bug, GitBranch, FileText, Loader2, AlertTriangle, Copy, Check, Filter } from "lucide-react";
 import { getUnfinished } from "../api/client";
 
 export default function UnfinishedView({ repository, onInspectEvidence }) {
@@ -8,6 +8,7 @@ export default function UnfinishedView({ repository, onInspectEvidence }) {
   const [category, setCategory] = useState("");
   const [severity, setSeverity] = useState("");
   const [loading, setLoading] = useState(true);
+  const [copiedPath, setCopiedPath] = useState(null);
 
   const loadItems = async () => {
     setLoading(true);
@@ -25,6 +26,12 @@ export default function UnfinishedView({ repository, onInspectEvidence }) {
   useEffect(() => {
     loadItems();
   }, [repository.id, category, severity]);
+
+  const handleCopyPath = (path) => {
+    navigator.clipboard.writeText(path);
+    setCopiedPath(path);
+    setTimeout(() => setCopiedPath(null), 2000);
+  };
 
   const getSeverityBadge = (sev) => {
     switch (sev) {
@@ -47,26 +54,62 @@ export default function UnfinishedView({ repository, onInspectEvidence }) {
   };
 
   return (
-    <div style={{ maxWidth: 1200, margin: "24px auto", padding: "0 20px" }}>
+    <div style={{ maxWidth: 1200, margin: "24px auto", padding: "0 24px" }}>
       {/* Title */}
-      <div style={{ marginBottom: 28 }}>
-        <h2 className="font-gothic" style={{ fontSize: "1.8rem", color: "#fff", display: "flex", alignItems: "center", gap: 10 }}>
-          <AlertOctagon size={26} color="var(--ancient-amber)" />
-          The Unfinished Vault
-        </h2>
-        <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-          Identified TODOs, dangling documentation promises, unmerged branch specters, and unresolved issues
-        </span>
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: 24,
+        paddingBottom: 16,
+        borderBottom: "1px solid var(--border-subtle)",
+        flexWrap: "wrap",
+        gap: 16
+      }}>
+        <div>
+          <h1 className="font-gothic" style={{ fontSize: "1.9rem", color: "#ffffff", display: "flex", alignItems: "center", gap: 10 }}>
+            <AlertOctagon size={24} color="var(--ancient-amber)" />
+            The Unfinished Vault
+          </h1>
+          <span style={{ fontSize: "0.84rem", color: "var(--text-muted)" }}>
+            Archaeological triage of TODO markers, unresolved bugs, unmerged branches, and dangling documentation promises
+          </span>
+        </div>
+
+        {/* Severity Filter Pills */}
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            onClick={() => setSeverity("")}
+            className={`btn ${severity === "" ? "btn-primary" : "btn-ghost"}`}
+            style={{ padding: "6px 12px", fontSize: "0.8rem" }}
+          >
+            All Severities
+          </button>
+          <button
+            onClick={() => setSeverity("high")}
+            className={`btn ${severity === "high" ? "btn-primary" : "btn-ghost"}`}
+            style={{ padding: "6px 12px", fontSize: "0.8rem", color: "var(--blood-crimson)" }}
+          >
+            High Only
+          </button>
+          <button
+            onClick={() => setSeverity("medium")}
+            className={`btn ${severity === "medium" ? "btn-primary" : "btn-ghost"}`}
+            style={{ padding: "6px 12px", fontSize: "0.8rem", color: "var(--ancient-amber)" }}
+          >
+            Medium
+          </button>
+        </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+      {/* Category Tabs */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
         <button
           onClick={() => setCategory("")}
           className={`btn ${category === "" ? "btn-primary" : "btn-ghost"}`}
           style={{ padding: "6px 14px", fontSize: "0.82rem" }}
         >
-          All Items ({items.length})
+          All Markers ({items.length})
         </button>
         {Object.entries(breakdown).map(([cat, count]) => (
           <button
@@ -80,7 +123,7 @@ export default function UnfinishedView({ repository, onInspectEvidence }) {
         ))}
       </div>
 
-      {/* Items List */}
+      {/* Items Stream */}
       {loading ? (
         <div style={{ textAlign: "center", padding: "60px 0", color: "var(--ancient-amber)" }}>
           <Loader2 size={32} className="ghost-float" style={{ margin: "0 auto 12px" }} />
@@ -88,7 +131,7 @@ export default function UnfinishedView({ repository, onInspectEvidence }) {
         </div>
       ) : items.length === 0 ? (
         <div className="glass-panel" style={{ textAlign: "center", padding: 48, color: "var(--text-muted)" }}>
-          No unfinished business matches this filter.
+          No unfinished business matches this filter criteria.
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 14 }}>
@@ -104,16 +147,15 @@ export default function UnfinishedView({ repository, onInspectEvidence }) {
               className="glass-panel glass-panel-interactive"
               style={{
                 padding: 18,
-                cursor: "pointer",
-                borderLeft: `4px solid ${item.severity === "high" ? "var(--blood-crimson)" : item.severity === "medium" ? "var(--ancient-amber)" : "var(--spectral-teal)"}`
+                borderLeft: `3px solid ${item.severity === "high" ? "var(--blood-crimson)" : item.severity === "medium" ? "var(--ancient-amber)" : "var(--spectral-teal)"}`
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 8 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   {getCategoryIcon(item.category)}
-                  <h4 style={{ fontSize: "0.98rem", color: "#fff", fontWeight: 600 }}>
+                  <h3 style={{ fontSize: "0.98rem", color: "#ffffff", fontWeight: 600 }}>
                     {item.title}
-                  </h4>
+                  </h3>
                 </div>
                 {getSeverityBadge(item.severity)}
               </div>
@@ -124,7 +166,7 @@ export default function UnfinishedView({ repository, onInspectEvidence }) {
                   padding: "10px 14px",
                   borderRadius: 6,
                   fontSize: "0.8rem",
-                  color: "#c3cde0",
+                  color: "#cbd5e1",
                   marginBottom: 10,
                   whiteSpace: "pre-wrap",
                   overflowX: "auto"
@@ -133,8 +175,31 @@ export default function UnfinishedView({ repository, onInspectEvidence }) {
                 </pre>
               )}
 
-              <div className="font-mono" style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                {item.file_path}{item.line_number > 0 ? `#L${item.line_number}` : ''}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.76rem" }}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopyPath(item.file_path);
+                  }}
+                  className="font-mono btn-ghost"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "3px 8px",
+                    borderRadius: 4,
+                    color: "var(--text-muted)",
+                    cursor: "pointer"
+                  }}
+                  title="Click to copy file path"
+                >
+                  {copiedPath === item.file_path ? <Check size={12} color="var(--spectral-teal)" /> : <Copy size={12} />}
+                  <span>{item.file_path}{item.line_number > 0 ? `#L${item.line_number}` : ""}</span>
+                </button>
+
+                <span style={{ color: "var(--spectral-teal)", fontWeight: 500 }}>
+                  Inspect Evidence →
+                </span>
               </div>
             </div>
           ))}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { GitCommit, Search, Sparkles, Filter, Calendar, User, FileDiff, Loader2 } from "lucide-react";
+import { GitCommit, Search, Sparkles, Calendar, User, FileDiff, Loader2, Copy, Check, ArrowUpRight } from "lucide-react";
 import { getTimeline } from "../api/client";
 
 export default function GhostTimelineView({ repository, onInspectEvidence }) {
@@ -7,6 +7,7 @@ export default function GhostTimelineView({ repository, onInspectEvidence }) {
   const [loading, setLoading] = useState(true);
   const [onlySignificant, setOnlySignificant] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [copiedHash, setCopiedHash] = useState(null);
 
   const loadTimeline = async () => {
     setLoading(true);
@@ -14,7 +15,7 @@ export default function GhostTimelineView({ repository, onInspectEvidence }) {
       const data = await getTimeline(repository.id, {
         onlySignificant,
         search: searchTerm,
-        limit: 150
+        limit: 200
       });
       setCommits(data.timeline || []);
     } catch (err) {
@@ -28,12 +29,14 @@ export default function GhostTimelineView({ repository, onInspectEvidence }) {
     loadTimeline();
   }, [repository.id, onlySignificant]);
 
-  const handleSearchKeyDown = (e) => {
-    if (e.key === "Enter") loadTimeline();
+  const handleCopyHash = (hash) => {
+    navigator.clipboard.writeText(hash);
+    setCopiedHash(hash);
+    setTimeout(() => setCopiedHash(null), 2000);
   };
 
   return (
-    <div style={{ maxWidth: 1100, margin: "24px auto", padding: "0 20px" }}>
+    <div style={{ maxWidth: 1100, margin: "24px auto", padding: "0 24px" }}>
       {/* Header & Controls */}
       <div style={{
         display: "flex",
@@ -41,30 +44,32 @@ export default function GhostTimelineView({ repository, onInspectEvidence }) {
         justifyContent: "space-between",
         gap: 16,
         marginBottom: 28,
+        paddingBottom: 16,
+        borderBottom: "1px solid var(--border-subtle)",
         flexWrap: "wrap"
       }}>
         <div>
-          <h2 className="font-gothic" style={{ fontSize: "1.8rem", color: "#fff", display: "flex", alignItems: "center", gap: 10 }}>
-            <GitCommit size={26} color="var(--spectral-teal)" />
-            Ghost Timeline
-          </h2>
-          <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-            Chronological history of recorded commits & major architectural milestones
+          <h1 className="font-gothic" style={{ fontSize: "1.9rem", color: "#ffffff", display: "flex", alignItems: "center", gap: 10 }}>
+            <GitCommit size={24} color="var(--spectral-teal)" />
+            Ghost Stratigraphy
+          </h1>
+          <span style={{ fontSize: "0.84rem", color: "var(--text-muted)" }}>
+            Excavated commit timeline tracking structural evolution, high churn, and architectural milestones
           </span>
         </div>
 
-        {/* Filters */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        {/* Filter Controls */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ position: "relative", minWidth: 240 }}>
-            <Search size={16} color="var(--text-muted)" style={{ position: "absolute", left: 12, top: 12 }} />
+            <Search size={15} color="var(--text-muted)" style={{ position: "absolute", left: 12, top: 12 }} />
             <input
               type="text"
               className="input-field font-mono"
               placeholder="Search commit or author..."
-              style={{ paddingLeft: 36, fontSize: "0.85rem" }}
+              style={{ paddingLeft: 34, fontSize: "0.82rem" }}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
+              onKeyDown={(e) => e.key === "Enter" && loadTimeline()}
             />
           </div>
 
@@ -73,13 +78,13 @@ export default function GhostTimelineView({ repository, onInspectEvidence }) {
             className={`btn ${onlySignificant ? "btn-primary" : "btn-ghost"}`}
             style={{ padding: "8px 14px", fontSize: "0.82rem" }}
           >
-            <Sparkles size={15} />
-            {onlySignificant ? "Milestones Only" : "All Commits"}
+            <Sparkles size={14} />
+            {onlySignificant ? "Milestones Only" : "All Strata"}
           </button>
         </div>
       </div>
 
-      {/* Timeline Stream */}
+      {/* Stratigraphic Timeline Stream */}
       {loading ? (
         <div style={{ textAlign: "center", padding: "60px 0", color: "var(--spectral-teal)" }}>
           <Loader2 size={32} className="ghost-float" style={{ margin: "0 auto 12px" }} />
@@ -90,84 +95,142 @@ export default function GhostTimelineView({ repository, onInspectEvidence }) {
           No commits matched the specified filter criteria.
         </div>
       ) : (
-        <div style={{ position: "relative", paddingLeft: 30 }}>
-          {/* Vertical Timeline Guide Wire */}
+        <div style={{ position: "relative", paddingLeft: 28 }}>
+          {/* Stratigraphic Vertical Guide Line */}
           <div style={{
             position: "absolute",
-            left: 11,
-            top: 15,
+            left: 10,
+            top: 14,
             bottom: 20,
             width: 2,
-            background: "linear-gradient(180deg, var(--spectral-teal) 0%, rgba(168, 85, 247, 0.4) 100%)"
+            background: "linear-gradient(180deg, var(--spectral-teal) 0%, rgba(168, 85, 247, 0.4) 50%, var(--border-dim) 100%)",
+            opacity: 0.4
           }} />
 
-          {commits.map((c) => (
-            <div
-              key={c.commit_hash}
-              className="glass-panel glass-panel-interactive"
-              onClick={() => onInspectEvidence({
-                source_type: "commit",
-                source_identifier: c.commit_hash,
-                source_location: `Commit ${c.commit_hash.slice(0, 8)}`,
-                content_excerpt: `Commit ${c.commit_hash} by ${c.author_name} on ${c.committed_at}\n\nMessage:\n${c.message}\n\nFiles Changed: ${c.files_changed_count} (+${c.insertions}/-${c.deletions})\n${c.significance_reason ? 'Significance: ' + c.significance_reason : ''}`
-              })}
-              style={{
-                padding: 18,
-                marginBottom: 16,
-                position: "relative",
-                cursor: "pointer",
-                borderColor: c.is_significant ? "rgba(0, 245, 196, 0.35)" : "var(--border-dim)"
-              }}
-            >
-              {/* Timeline Marker Dot */}
-              <div style={{
-                position: "absolute",
-                left: -26,
-                top: 22,
-                width: 14,
-                height: 14,
-                borderRadius: "50%",
-                background: c.is_significant ? "var(--spectral-teal)" : "var(--bg-crypt)",
-                border: `2px solid ${c.is_significant ? "var(--spectral-teal)" : "var(--border-bright)"}`,
-                boxShadow: c.is_significant ? "0 0 10px var(--spectral-teal)" : "none"
-              }} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+            {commits.map((c) => {
+              const dateStr = c.committed_at ? c.committed_at.slice(0, 10) : "";
+              const shortHash = c.commit_hash ? c.commit_hash.slice(0, 8) : "";
 
-              {/* Commit Content */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 8 }}>
-                <h4 style={{ fontSize: "1rem", color: "#fff", fontWeight: 600 }}>
-                  {c.message}
-                </h4>
-                <span className="font-mono" style={{ fontSize: "0.75rem", color: "var(--spectral-teal)" }}>
-                  {c.commit_hash.slice(0, 8)}
-                </span>
-              </div>
+              return (
+                <div key={c.id} style={{ position: "relative" }}>
+                  {/* Stratum Node Icon */}
+                  <div style={{
+                    position: "absolute",
+                    left: -24,
+                    top: 16,
+                    width: 14,
+                    height: 14,
+                    borderRadius: "50%",
+                    background: c.is_significant ? "var(--spectral-teal)" : "var(--bg-chamber)",
+                    border: `2px solid ${c.is_significant ? "var(--spectral-teal)" : "var(--border-medium)"}`,
+                    boxShadow: c.is_significant ? "0 0 10px var(--spectral-teal)" : "none"
+                  }} />
 
-              {/* Significance Reason Tag */}
-              {c.significance_reason && (
-                <div style={{ marginBottom: 10 }}>
-                  <span className="badge badge-amber" style={{ fontSize: "0.72rem" }}>
-                    ⭐ {c.significance_reason}
-                  </span>
+                  {/* Commit Record Card */}
+                  <div className="glass-panel" style={{
+                    padding: 18,
+                    borderLeft: c.is_significant ? "3px solid var(--spectral-teal)" : "1px solid var(--border-subtle)"
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 8, flexWrap: "wrap" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        {/* SHA Copy Badge */}
+                        <button
+                          onClick={() => handleCopyHash(c.commit_hash)}
+                          className="badge badge-teal"
+                          style={{ cursor: "pointer", border: "1px solid rgba(0, 245, 196, 0.3)" }}
+                          title="Click to copy full commit hash"
+                        >
+                          {copiedHash === c.commit_hash ? <Check size={11} /> : <Copy size={11} />}
+                          <span>{shortHash}</span>
+                        </button>
+
+                        {c.is_significant && (
+                          <span className="badge badge-amethyst">
+                            <Sparkles size={11} />
+                            Milestone
+                          </span>
+                        )}
+
+                        <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}>
+                          <Calendar size={12} />
+                          {dateStr}
+                        </span>
+                      </div>
+
+                      {/* Diff Churn Stats */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.78rem", fontFamily: "var(--font-mono)" }}>
+                        {c.files_changed_count > 0 && (
+                          <span style={{ color: "var(--text-muted)" }}>{c.files_changed_count} files</span>
+                        )}
+                        {c.insertions > 0 && (
+                          <span style={{ color: "var(--spectral-teal)" }}>+{c.insertions}</span>
+                        )}
+                        {c.deletions > 0 && (
+                          <span style={{ color: "var(--blood-crimson)" }}>-{c.deletions}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Commit Message */}
+                    <h3 style={{
+                      fontSize: "0.98rem",
+                      fontWeight: 600,
+                      color: "#ffffff",
+                      marginBottom: c.significance_reason ? 8 : 12,
+                      lineHeight: 1.45
+                    }}>
+                      {c.message}
+                    </h3>
+
+                    {/* Significance Reason if milestone */}
+                    {c.significance_reason && (
+                      <div style={{
+                        fontSize: "0.78rem",
+                        color: "var(--text-secondary)",
+                        background: "rgba(168, 85, 247, 0.08)",
+                        border: "1px solid rgba(168, 85, 247, 0.2)",
+                        padding: "6px 12px",
+                        borderRadius: 6,
+                        marginBottom: 12
+                      }}>
+                        <strong>Architectural Insight:</strong> {c.significance_reason}
+                      </div>
+                    )}
+
+                    {/* Footer / Relic Inspection Action */}
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      paddingTop: 10,
+                      borderTop: "1px solid var(--border-subtle)",
+                      fontSize: "0.78rem"
+                    }}>
+                      <span style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}>
+                        <User size={12} />
+                        {c.author_name}
+                      </span>
+
+                      <button
+                        onClick={() => onInspectEvidence({
+                          source_type: "commit",
+                          source_identifier: c.commit_hash,
+                          source_location: `Commit ${shortHash}`,
+                          content_excerpt: `Commit ${c.commit_hash} by ${c.author_name} (${dateStr}):\n${c.message}\n\nFiles changed: ${c.files_changed_count} (+${c.insertions} / -${c.deletions})`
+                        })}
+                        className="btn btn-ghost"
+                        style={{ padding: "4px 10px", fontSize: "0.75rem" }}
+                      >
+                        <FileDiff size={13} color="var(--spectral-teal)" />
+                        Inspect Commit Artifact
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              )}
-
-              {/* Commit Meta Footer */}
-              <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: "0.78rem", color: "var(--text-muted)", flexWrap: "wrap" }}>
-                <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                  <User size={13} /> {c.author_name}
-                </span>
-                <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                  <Calendar size={13} /> {c.committed_at.slice(0, 10)}
-                </span>
-                <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                  <FileDiff size={13} /> {c.files_changed_count} files
-                </span>
-                <span className="font-mono" style={{ color: "var(--spectral-teal)" }}>
-                  +{c.insertions} / <span style={{ color: "var(--blood-crimson)" }}>-{c.deletions}</span>
-                </span>
-              </div>
-            </div>
-          ))}
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

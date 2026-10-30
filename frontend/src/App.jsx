@@ -110,6 +110,7 @@ export default function App() {
         {currentRepo && activeTab === "report" && (
           <ReportView
             repository={currentRepo}
+            onInspectEvidence={(ev) => setInspectedEvidence(ev)}
           />
         )}
       </main>

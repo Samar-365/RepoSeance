@@ -1,21 +1,23 @@
 import React from "react";
-import { Ghost, Sparkles, Database, Skull, ScrollText, GitCommit, AlertOctagon, Cpu } from "lucide-react";
+import { Ghost, Database, Skull, GitCommit, AlertOctagon, ScrollText, Sparkles, FolderGit2, Cpu } from "lucide-react";
 
 export default function Navbar({ activeTab, setActiveTab, currentRepo, ollamaStatus, onOpenSummon }) {
-  const isOllamaConnected = ollamaStatus?.ollama_status === "connected";
+  const isConnected = ollamaStatus?.ollama_status === "connected";
+  const modelName = ollamaStatus?.configured_model || "gemma2:2b";
 
   return (
     <header style={{
-      background: "rgba(11, 14, 20, 0.85)",
-      backdropFilter: "blur(16px)",
-      borderBottom: "1px solid var(--border-dim)",
+      background: "rgba(11, 14, 20, 0.88)",
+      backdropFilter: "blur(20px)",
+      WebkitBackdropFilter: "blur(20px)",
+      borderBottom: "1px solid var(--border-subtle)",
       position: "sticky",
       top: 0,
       zIndex: 100,
-      padding: "12px 24px",
+      padding: "10px 24px",
     }}>
       <div style={{
-        maxWidth: 1400,
+        maxWidth: 1440,
         margin: "0 auto",
         display: "flex",
         alignItems: "center",
@@ -25,163 +27,129 @@ export default function Navbar({ activeTab, setActiveTab, currentRepo, ollamaSta
         {/* Brand */}
         <div 
           onClick={onOpenSummon}
-          style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}
+          style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer", userSelect: "none" }}
         >
           <div style={{
-            width: 40,
-            height: 40,
+            width: 38,
+            height: 38,
             borderRadius: 10,
-            background: "linear-gradient(135deg, rgba(0, 245, 196, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%)",
+            background: "linear-gradient(135deg, rgba(0, 245, 196, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%)",
             border: "1px solid rgba(0, 245, 196, 0.3)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 0 15px rgba(0, 245, 196, 0.2)"
+            boxShadow: "0 0 16px rgba(0, 245, 196, 0.15)"
           }}>
-            <Ghost size={22} color="var(--spectral-teal)" className="spectral-glow" />
+            <Ghost size={20} color="var(--spectral-teal)" className="spectral-glow" />
           </div>
           <div>
-            <h1 style={{
-              fontSize: "1.15rem",
-              fontWeight: 700,
-              background: "linear-gradient(135deg, #ffffff 0%, var(--spectral-teal) 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              lineHeight: 1.1
-            }}>
-              RepoSeance
-            </h1>
-            <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", letterSpacing: "0.08em" }}>
-              SOFTWARE ARCHAEOLOGY & LOCAL AI
-            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span className="font-gothic" style={{
+                fontSize: "1.2rem",
+                fontWeight: 700,
+                color: "#ffffff",
+                letterSpacing: "0.04em"
+              }}>
+                RepoSeance
+              </span>
+              <span className="badge badge-teal" style={{ fontSize: "0.65rem", padding: "1px 6px" }}>
+                Archaeology AI
+              </span>
+            </div>
+            <div style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
+              {currentRepo ? currentRepo.name : "Codebase Resurrection Engine"}
+            </div>
           </div>
         </div>
 
-        {/* Center Navigation Tabs (Only if repo selected) */}
+        {/* Navigation Tabs (Available when a repository is active) */}
         {currentRepo && (
-          <nav style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(0,0,0,0.3)", padding: 4, borderRadius: 10, border: "1px solid var(--border-dim)" }}>
+          <nav style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            background: "rgba(0, 0, 0, 0.35)",
+            padding: "4px 6px",
+            borderRadius: 10,
+            border: "1px solid var(--border-subtle)"
+          }}>
             <button
               onClick={() => setActiveTab("dashboard")}
-              className={`btn btn-ghost ${activeTab === "dashboard" ? "active-tab" : ""}`}
-              style={{
-                padding: "8px 14px",
-                fontSize: "0.82rem",
-                background: activeTab === "dashboard" ? "rgba(0, 245, 196, 0.15)" : "transparent",
-                color: activeTab === "dashboard" ? "var(--spectral-teal)" : "var(--text-secondary)",
-                borderColor: activeTab === "dashboard" ? "rgba(0, 245, 196, 0.3)" : "transparent"
-              }}
+              className={`btn btn-ghost ${activeTab === "dashboard" ? "active" : ""}`}
+              style={{ padding: "6px 12px", fontSize: "0.82rem" }}
             >
-              <Database size={15} /> Sanctum
+              <Database size={14} /> Overview
             </button>
+
             <button
               onClick={() => setActiveTab("chat")}
-              className={`btn btn-ghost ${activeTab === "chat" ? "active-tab" : ""}`}
-              style={{
-                padding: "8px 14px",
-                fontSize: "0.82rem",
-                background: activeTab === "chat" ? "rgba(0, 245, 196, 0.15)" : "transparent",
-                color: activeTab === "chat" ? "var(--spectral-teal)" : "var(--text-secondary)",
-                borderColor: activeTab === "chat" ? "rgba(0, 245, 196, 0.3)" : "transparent"
-              }}
+              className={`btn btn-ghost ${activeTab === "chat" ? "active" : ""}`}
+              style={{ padding: "6px 12px", fontSize: "0.82rem" }}
             >
-              <Skull size={15} /> Séance Chat
+              <Skull size={14} /> Séance Chamber
             </button>
+
             <button
               onClick={() => setActiveTab("timeline")}
-              className={`btn btn-ghost ${activeTab === "timeline" ? "active-tab" : ""}`}
-              style={{
-                padding: "8px 14px",
-                fontSize: "0.82rem",
-                background: activeTab === "timeline" ? "rgba(0, 245, 196, 0.15)" : "transparent",
-                color: activeTab === "timeline" ? "var(--spectral-teal)" : "var(--text-secondary)",
-                borderColor: activeTab === "timeline" ? "rgba(0, 245, 196, 0.3)" : "transparent"
-              }}
+              className={`btn btn-ghost ${activeTab === "timeline" ? "active" : ""}`}
+              style={{ padding: "6px 12px", fontSize: "0.82rem" }}
             >
-              <GitCommit size={15} /> Timeline
+              <GitCommit size={14} /> Stratigraphy
             </button>
+
             <button
               onClick={() => setActiveTab("unfinished")}
-              className={`btn btn-ghost ${activeTab === "unfinished" ? "active-tab" : ""}`}
-              style={{
-                padding: "8px 14px",
-                fontSize: "0.82rem",
-                background: activeTab === "unfinished" ? "rgba(0, 245, 196, 0.15)" : "transparent",
-                color: activeTab === "unfinished" ? "var(--spectral-teal)" : "var(--text-secondary)",
-                borderColor: activeTab === "unfinished" ? "rgba(0, 245, 196, 0.3)" : "transparent"
-              }}
+              className={`btn btn-ghost ${activeTab === "unfinished" ? "active" : ""}`}
+              style={{ padding: "6px 12px", fontSize: "0.82rem" }}
             >
-              <AlertOctagon size={15} /> Unfinished Vault
+              <AlertOctagon size={14} /> Unfinished Vault
             </button>
+
             <button
               onClick={() => setActiveTab("report")}
-              className={`btn btn-ghost ${activeTab === "report" ? "active-tab" : ""}`}
-              style={{
-                padding: "8px 14px",
-                fontSize: "0.82rem",
-                background: activeTab === "report" ? "rgba(0, 245, 196, 0.15)" : "transparent",
-                color: activeTab === "report" ? "var(--spectral-teal)" : "var(--text-secondary)",
-                borderColor: activeTab === "report" ? "rgba(0, 245, 196, 0.3)" : "transparent"
-              }}
+              className={`btn btn-ghost ${activeTab === "report" ? "active" : ""}`}
+              style={{ padding: "6px 12px", fontSize: "0.82rem" }}
             >
-              <ScrollText size={15} /> Resurrection Scroll
+              <ScrollText size={14} /> Resurrection Scroll
             </button>
           </nav>
         )}
 
-        {/* Right Status Badges */}
+        {/* Right Status Controls */}
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          {currentRepo && (
-            <div 
-              onClick={onOpenSummon}
-              title="Click to summon another repository"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "6px 12px",
-                background: "var(--bg-surface)",
-                border: "1px solid var(--border-dim)",
-                borderRadius: 8,
-                fontSize: "0.8rem",
-                cursor: "pointer",
-                maxWidth: 180,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap"
-              }}
-            >
-              <span style={{ color: "var(--text-muted)" }}>Active:</span>
-              <span style={{ color: "var(--spectral-teal)", fontWeight: 600 }}>{currentRepo.name}</span>
-            </div>
-          )}
-
-          {/* Ollama Status Badge */}
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "6px 12px",
-            background: isOllamaConnected ? "rgba(0, 245, 196, 0.08)" : "rgba(255, 170, 64, 0.08)",
-            border: `1px solid ${isOllamaConnected ? "rgba(0, 245, 196, 0.25)" : "rgba(255, 170, 64, 0.25)"}`,
-            borderRadius: 20,
-            fontSize: "0.76rem",
-            fontFamily: "var(--font-mono)"
-          }}>
-            <span style={{
-              width: 8,
-              height: 8,
+          {/* AI Status Badge */}
+          <div 
+            className="glass-panel"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "5px 12px",
+              borderRadius: 20,
+              fontSize: "0.78rem"
+            }}
+            title={isConnected ? `Ollama connected using ${modelName}` : "Ollama runtime offline (using simulation)"}
+          >
+            <div style={{
+              width: 7,
+              height: 7,
               borderRadius: "50%",
-              background: isOllamaConnected ? "var(--spectral-teal)" : "var(--ancient-amber)",
-              boxShadow: isOllamaConnected ? "0 0 8px var(--spectral-teal)" : "none",
-              display: "inline-block"
-            }} />
-            <Cpu size={14} color={isOllamaConnected ? "var(--spectral-teal)" : "var(--ancient-amber)"} />
-            <span>
-              {isOllamaConnected
-                ? `Ollama: ${ollamaStatus?.configured_model || "Ready"}`
-                : "Ollama: Offline"}
+              background: isConnected ? "var(--spectral-teal)" : "var(--ancient-amber)",
+              boxShadow: isConnected ? "0 0 8px var(--spectral-teal)" : "0 0 8px var(--ancient-amber)"
+            }} className="pulse-dot" />
+            <span style={{ color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>
+              {isConnected ? modelName : "Offline Simulation"}
             </span>
           </div>
+
+          {/* Summon Repository Button */}
+          <button
+            onClick={onOpenSummon}
+            className={`btn ${activeTab === "summon" ? "btn-primary" : "btn-ghost"}`}
+            style={{ padding: "6px 14px", fontSize: "0.82rem" }}
+          >
+            <FolderGit2 size={14} /> Summon Repo
+          </button>
         </div>
       </div>
     </header>

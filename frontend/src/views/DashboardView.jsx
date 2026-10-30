@@ -1,5 +1,5 @@
 import React from "react";
-import { Skull, GitCommit, AlertOctagon, ScrollText, Calendar, User, ArrowUpRight, Flame } from "lucide-react";
+import { Skull, GitCommit, AlertOctagon, ScrollText, Calendar, GitBranch, ArrowRight, Activity, Flame, ShieldAlert } from "lucide-react";
 
 export default function DashboardView({ repository, setActiveTab }) {
   if (!repository) return null;
@@ -7,168 +7,234 @@ export default function DashboardView({ repository, setActiveTab }) {
   const lastCommit = stats.last_commit;
 
   return (
-    <div style={{ maxWidth: 1300, margin: "30px auto", padding: "0 24px" }}>
-      {/* Title banner */}
+    <div style={{ maxWidth: 1280, margin: "28px auto", padding: "0 24px" }}>
+      {/* Title & Coordinates Banner */}
       <div style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        marginBottom: 32,
+        marginBottom: 28,
         paddingBottom: 20,
-        borderBottom: "1px solid var(--border-dim)"
+        borderBottom: "1px solid var(--border-subtle)",
+        flexWrap: "wrap",
+        gap: 16
       }}>
         <div>
-          <span style={{ fontSize: "0.82rem", color: "var(--spectral-teal)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>
-            Sanctum of
-          </span>
-          <h1 className="font-gothic" style={{ fontSize: "2.2rem", fontWeight: 700, color: "#fff", marginTop: 4 }}>
-            {repository.name}
-          </h1>
-          <div className="font-mono" style={{ fontSize: "0.82rem", color: "var(--text-muted)", marginTop: 4 }}>
-            Coordinates: {repository.path_or_url} | Default Branch: <span style={{ color: "var(--spectral-teal)" }}>{repository.default_branch}</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+            <h1 className="font-gothic" style={{ fontSize: "2.1rem", fontWeight: 700, color: "#ffffff" }}>
+              {repository.name}
+            </h1>
+            <span className="badge badge-teal">{repository.source_type}</span>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: "0.82rem", color: "var(--text-muted)", flexWrap: "wrap" }}>
+            <span className="font-mono">
+              Coordinates: <span style={{ color: "var(--text-secondary)" }}>{repository.path_or_url}</span>
+            </span>
+            <span>•</span>
+            <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <GitBranch size={13} color="var(--spectral-teal)" />
+              Branch: <strong style={{ color: "var(--spectral-teal)" }}>{repository.default_branch || "main"}</strong>
+            </span>
           </div>
         </div>
 
-        <button onClick={() => setActiveTab("chat")} className="btn btn-primary" style={{ padding: "12px 24px" }}>
-          <Skull size={18} /> Begin Conversation with Ghost
+        <button 
+          onClick={() => setActiveTab("chat")} 
+          className="btn btn-primary" 
+          style={{ padding: "10px 20px" }}
+        >
+          <Skull size={16} /> Enter Séance Chamber
         </button>
       </div>
 
-      {/* Metrics Row */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 36 }}>
+      {/* Primary Archaeological Metrics */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16, marginBottom: 32 }}>
         {/* Total Commits */}
-        <div className="glass-panel" style={{ padding: 24, position: "relative", overflow: "hidden" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-            <span style={{ color: "var(--text-secondary)", fontSize: "0.88rem" }}>Recorded Commits</span>
-            <GitCommit size={20} color="var(--spectral-teal)" />
+        <div className="glass-panel" style={{ padding: 20, borderLeft: "3px solid var(--spectral-teal)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+            <span style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>Commit Strata</span>
+            <GitCommit size={18} color="var(--spectral-teal)" />
           </div>
-          <div className="font-gothic" style={{ fontSize: "2.4rem", fontWeight: 700, color: "#fff" }}>
-            {stats.total_commits || 0}
+          <div className="font-gothic" style={{ fontSize: "2.2rem", fontWeight: 700, color: "#ffffff" }}>
+            {stats.total_commits || repository.total_commits || 0}
           </div>
-          <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: 6 }}>
-            Chronological project evolution preserved
+          <div style={{ fontSize: "0.76rem", color: "var(--text-muted)", marginTop: 4 }}>
+            Preserved historical checkpoints
           </div>
         </div>
 
-        {/* Unfinished Business */}
-        <div className="glass-panel" style={{ padding: 24 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-            <span style={{ color: "var(--text-secondary)", fontSize: "0.88rem" }}>Unfinished Markers</span>
-            <AlertOctagon size={20} color="var(--ancient-amber)" />
+        {/* Unfinished Markers */}
+        <div className="glass-panel" style={{ padding: 20, borderLeft: "3px solid var(--ancient-amber)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+            <span style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>Unfinished Markers</span>
+            <AlertOctagon size={18} color="var(--ancient-amber)" />
           </div>
-          <div className="font-gothic" style={{ fontSize: "2.4rem", fontWeight: 700, color: "var(--ancient-amber)" }}>
+          <div className="font-gothic" style={{ fontSize: "2.2rem", fontWeight: 700, color: "var(--ancient-amber)" }}>
             {stats.unfinished_items || 0}
           </div>
-          <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: 6 }}>
-            TODOs, FIXMEs & incomplete roadmap items
+          <div style={{ fontSize: "0.76rem", color: "var(--text-muted)", marginTop: 4 }}>
+            TODO, FIXME & abandoned promises
           </div>
         </div>
 
-        {/* Issues & PRs */}
-        <div className="glass-panel" style={{ padding: 24 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-            <span style={{ color: "var(--text-secondary)", fontSize: "0.88rem" }}>Discussions / Issues</span>
-            <Flame size={20} color="var(--spectral-amethyst)" />
+        {/* Discussions & Issues */}
+        <div className="glass-panel" style={{ padding: 20, borderLeft: "3px solid var(--spectral-amethyst)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+            <span style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>Discussions / PRs</span>
+            <Flame size={18} color="var(--spectral-amethyst)" />
           </div>
-          <div className="font-gothic" style={{ fontSize: "2.4rem", fontWeight: 700, color: "var(--spectral-amethyst)" }}>
+          <div className="font-gothic" style={{ fontSize: "2.2rem", fontWeight: 700, color: "var(--spectral-amethyst)" }}>
             {(stats.issues || 0) + (stats.prs || 0)}
           </div>
-          <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: 6 }}>
+          <div style={{ fontSize: "0.76rem", color: "var(--text-muted)", marginTop: 4 }}>
             {stats.issues || 0} issues, {stats.prs || 0} pull requests
           </div>
         </div>
 
-        {/* Last Recorded Breath */}
-        <div className="glass-panel" style={{ padding: 24 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-            <span style={{ color: "var(--text-secondary)", fontSize: "0.88rem" }}>Last Active Breath</span>
-            <Calendar size={20} color="var(--spectral-cyan)" />
+        {/* Last Active Breath */}
+        <div className="glass-panel" style={{ padding: 20, borderLeft: "3px solid var(--spectral-cyan)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+            <span style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>Last Active Breath</span>
+            <Calendar size={18} color="var(--spectral-cyan)" />
           </div>
-          <div className="font-mono" style={{ fontSize: "1.2rem", fontWeight: 600, color: "#fff", marginTop: 6 }}>
-            {lastCommit ? lastCommit.committed_at.slice(0, 10) : "Ancient times"}
+          <div className="font-mono" style={{ fontSize: "1.1rem", fontWeight: 600, color: "#ffffff", marginTop: 4 }}>
+            {lastCommit ? lastCommit.committed_at.slice(0, 10) : "Historical"}
           </div>
-          <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            {lastCommit ? lastCommit.message : "No commits recorded"}
+          <div style={{ fontSize: "0.76rem", color: "var(--text-muted)", marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            {lastCommit ? lastCommit.message : "Recorded history intact"}
           </div>
         </div>
       </div>
 
-      {/* Portals Grid */}
-      <h2 className="font-gothic" style={{ fontSize: "1.3rem", marginBottom: 18, color: "#fff" }}>
+      {/* Investigation Portals Grid */}
+      <h2 className="font-gothic" style={{ fontSize: "1.25rem", marginBottom: 16, color: "#ffffff" }}>
         Chambers of Investigation
       </h2>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
-        {/* Portal: Chat */}
-        <div 
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
+        {/* Portal 1: Séance Chamber */}
+        <div
           onClick={() => setActiveTab("chat")}
-          className="glass-panel glass-panel-interactive" 
-          style={{ padding: 28, cursor: "pointer", borderLeft: "4px solid var(--spectral-teal)" }}
+          className="glass-panel glass-panel-interactive"
+          style={{ padding: 22 }}
         >
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-            <div style={{ padding: 12, borderRadius: 10, background: "rgba(0, 245, 196, 0.1)" }}>
-              <Skull size={28} color="var(--spectral-teal)" />
-            </div>
-            <ArrowUpRight size={20} color="var(--text-muted)" />
+          <div style={{
+            width: 42,
+            height: 42,
+            borderRadius: 10,
+            background: "rgba(0, 245, 196, 0.1)",
+            border: "1px solid rgba(0, 245, 196, 0.25)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 16
+          }}>
+            <Skull size={22} color="var(--spectral-teal)" />
           </div>
-          <h3 style={{ fontSize: "1.2rem", marginBottom: 8, color: "#fff" }}>Séance Chamber</h3>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", lineHeight: 1.5 }}>
-            Converse with the repository ghost. Inquire about origin stories, historical bugs, or refactoring intent backed by verifiable citations.
+          <h3 style={{ fontSize: "1.1rem", marginBottom: 6, color: "#ffffff" }}>
+            Séance Chamber
+          </h3>
+          <p style={{ fontSize: "0.86rem", color: "var(--text-secondary)", lineHeight: 1.5, marginBottom: 16 }}>
+            Interrogate the Repository Ghost with natural language questions. Every assertion is verified against surviving commit and code evidence.
           </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.82rem", color: "var(--spectral-teal)", fontWeight: 500 }}>
+            <span>Commune with Ghost</span>
+            <ArrowRight size={14} />
+          </div>
         </div>
 
-        {/* Portal: Timeline */}
-        <div 
+        {/* Portal 2: Ghost Timeline */}
+        <div
           onClick={() => setActiveTab("timeline")}
-          className="glass-panel glass-panel-interactive" 
-          style={{ padding: 28, cursor: "pointer", borderLeft: "4px solid var(--spectral-cyan)" }}
+          className="glass-panel glass-panel-interactive"
+          style={{ padding: 22 }}
         >
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-            <div style={{ padding: 12, borderRadius: 10, background: "rgba(0, 210, 255, 0.1)" }}>
-              <GitCommit size={28} color="var(--spectral-cyan)" />
-            </div>
-            <ArrowUpRight size={20} color="var(--text-muted)" />
+          <div style={{
+            width: 42,
+            height: 42,
+            borderRadius: 10,
+            background: "rgba(0, 210, 255, 0.1)",
+            border: "1px solid rgba(0, 210, 255, 0.25)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 16
+          }}>
+            <GitCommit size={22} color="var(--spectral-cyan)" />
           </div>
-          <h3 style={{ fontSize: "1.2rem", marginBottom: 8, color: "#fff" }}>Ghost Timeline</h3>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", lineHeight: 1.5 }}>
-            Trace chronological commit inflection points, inspect code churn metrics, and filter by major releases and merge milestones.
+          <h3 style={{ fontSize: "1.1rem", marginBottom: 6, color: "#ffffff" }}>
+            Ghost Stratigraphy
+          </h3>
+          <p style={{ fontSize: "0.86rem", color: "var(--text-secondary)", lineHeight: 1.5, marginBottom: 16 }}>
+            Walk the chronological timeline of commit milestones, high-churn architectural pivots, and author contributions with diff inspection.
           </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.82rem", color: "var(--spectral-cyan)", fontWeight: 500 }}>
+            <span>Examine Strata</span>
+            <ArrowRight size={14} />
+          </div>
         </div>
 
-        {/* Portal: Unfinished Vault */}
-        <div 
+        {/* Portal 3: Unfinished Vault */}
+        <div
           onClick={() => setActiveTab("unfinished")}
-          className="glass-panel glass-panel-interactive" 
-          style={{ padding: 28, cursor: "pointer", borderLeft: "4px solid var(--ancient-amber)" }}
+          className="glass-panel glass-panel-interactive"
+          style={{ padding: 22 }}
         >
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-            <div style={{ padding: 12, borderRadius: 10, background: "rgba(255, 170, 64, 0.1)" }}>
-              <AlertOctagon size={28} color="var(--ancient-amber)" />
-            </div>
-            <ArrowUpRight size={20} color="var(--text-muted)" />
+          <div style={{
+            width: 42,
+            height: 42,
+            borderRadius: 10,
+            background: "rgba(245, 158, 11, 0.1)",
+            border: "1px solid rgba(245, 158, 11, 0.25)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 16
+          }}>
+            <AlertOctagon size={22} color="var(--ancient-amber)" />
           </div>
-          <h3 style={{ fontSize: "1.2rem", marginBottom: 8, color: "#fff" }}>Unfinished Vault</h3>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", lineHeight: 1.5 }}>
-            Examine unresolved TODOs, high-severity FIXMEs, dangling documentation features, and abandoned unmerged branches.
+          <h3 style={{ fontSize: "1.1rem", marginBottom: 6, color: "#ffffff" }}>
+            Unfinished Vault
+          </h3>
+          <p style={{ fontSize: "0.86rem", color: "var(--text-secondary)", lineHeight: 1.5, marginBottom: 16 }}>
+            Browse severity-ranked TODOs, unresolved FIXMEs, dangling documentation promises, and unmerged branch specters.
           </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.82rem", color: "var(--ancient-amber)", fontWeight: 500 }}>
+            <span>Audit Unfinished Work</span>
+            <ArrowRight size={14} />
+          </div>
         </div>
 
-        {/* Portal: Resurrection Scroll */}
-        <div 
+        {/* Portal 4: Resurrection Scroll */}
+        <div
           onClick={() => setActiveTab("report")}
-          className="glass-panel glass-panel-interactive" 
-          style={{ padding: 28, cursor: "pointer", borderLeft: "4px solid var(--spectral-amethyst)" }}
+          className="glass-panel glass-panel-interactive"
+          style={{ padding: 22 }}
         >
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-            <div style={{ padding: 12, borderRadius: 10, background: "rgba(168, 85, 247, 0.1)" }}>
-              <ScrollText size={28} color="var(--spectral-amethyst)" />
-            </div>
-            <ArrowUpRight size={20} color="var(--text-muted)" />
+          <div style={{
+            width: 42,
+            height: 42,
+            borderRadius: 10,
+            background: "rgba(168, 85, 247, 0.1)",
+            border: "1px solid rgba(168, 85, 247, 0.25)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 16
+          }}>
+            <ScrollText size={22} color="var(--spectral-amethyst)" />
           </div>
-          <h3 style={{ fontSize: "1.2rem", marginBottom: 8, color: "#fff" }}>Resurrection Scroll</h3>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", lineHeight: 1.5 }}>
-            Synthesize an evidence-backed resurrection blueprint and export structured Markdown / JSON revival checklists.
+          <h3 style={{ fontSize: "1.1rem", marginBottom: 6, color: "#ffffff" }}>
+            Resurrection Scroll
+          </h3>
+          <p style={{ fontSize: "0.86rem", color: "var(--text-secondary)", lineHeight: 1.5, marginBottom: 16 }}>
+            Synthesize an evidence-backed archaeological report and modern step-by-step revival checklist, exportable to Markdown and JSON.
           </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.82rem", color: "var(--spectral-amethyst)", fontWeight: 500 }}>
+            <span>Inscribe Revival Plan</span>
+            <ArrowRight size={14} />
+          </div>
         </div>
       </div>
     </div>

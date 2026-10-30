@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Ghost, Sparkles, FolderGit2, ArrowRight, ShieldCheck, History, Loader2, GitBranch } from "lucide-react";
+import { Ghost, FolderGit2, ArrowRight, ShieldCheck, History, Loader2, Database, Sparkles, CheckCircle2 } from "lucide-react";
 import { analyzeRepository } from "../api/client";
 
 export default function SummonView({ repositories, onSelectRepo, onAnalysisComplete }) {
@@ -24,71 +24,80 @@ export default function SummonView({ repositories, onSelectRepo, onAnalysisCompl
   };
 
   return (
-    <div style={{ maxWidth: 1000, margin: "40px auto", padding: "0 20px" }}>
-      {/* Hero */}
-      <div style={{ textAlign: "center", marginBottom: 48 }}>
-        <div style={{ display: "inline-block", marginBottom: 16 }}>
+    <div style={{ maxWidth: 960, margin: "36px auto", padding: "0 24px" }}>
+      {/* Hero Atmosphere */}
+      <div style={{ textAlign: "center", marginBottom: 40 }}>
+        <div style={{ display: "inline-flex", marginBottom: 18 }}>
           <div className="ghost-float" style={{
-            width: 72,
-            height: 72,
+            width: 64,
+            height: 64,
             borderRadius: "50%",
             background: "radial-gradient(circle, rgba(0, 245, 196, 0.2) 0%, transparent 70%)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            margin: "0 auto",
-            border: "1px solid rgba(0, 245, 196, 0.3)"
+            border: "1px solid rgba(0, 245, 196, 0.35)",
+            boxShadow: "0 0 30px rgba(0, 245, 196, 0.15)"
           }}>
-            <Ghost size={36} color="var(--spectral-teal)" className="spectral-glow" />
+            <Ghost size={32} color="var(--spectral-teal)" className="spectral-glow" />
           </div>
         </div>
 
         <h1 className="font-gothic" style={{
-          fontSize: "2.8rem",
-          fontWeight: 900,
-          background: "linear-gradient(180deg, #ffffff 30%, var(--spectral-teal) 100%)",
+          fontSize: "2.6rem",
+          fontWeight: 700,
+          background: "linear-gradient(180deg, #ffffff 40%, var(--spectral-teal) 100%)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           marginBottom: 12
         }}>
-          SUMMON REPOSEANCE
+          Resurrect Abandoned Repositories
         </h1>
-        <p style={{ color: "var(--text-secondary)", fontSize: "1.1rem", maxWidth: 640, margin: "0 auto", lineHeight: 1.6 }}>
-          Resurrect the lost context of abandoned, archived, or unfamiliar software repositories.
-          Ground every answer in surviving commits, pull requests, and code markers using local Gemma AI.
+        
+        <p style={{ color: "var(--text-secondary)", fontSize: "1.05rem", maxWidth: 620, margin: "0 auto", lineHeight: 1.6 }}>
+          Excavate Git commit strata, trace forgotten architectural intents, and interrogate surviving code relics using local Gemma AI.
         </p>
       </div>
 
-      {/* Summoning Input Card */}
-      <div className="glass-panel" style={{ padding: 32, marginBottom: 40, borderColor: "var(--border-bright)" }}>
-        <h2 style={{ fontSize: "1.15rem", marginBottom: 16, display: "flex", alignItems: "center", gap: 10 }}>
-          <FolderGit2 size={20} color="var(--spectral-teal)" />
+      {/* Repository Coordinate Input Box */}
+      <div className="glass-panel" style={{ padding: 28, marginBottom: 36, borderColor: "var(--border-medium)" }}>
+        <label style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          fontSize: "0.95rem",
+          fontWeight: 500,
+          marginBottom: 12,
+          color: "var(--text-primary)"
+        }}>
+          <FolderGit2 size={18} color="var(--spectral-teal)" />
           Provide Repository Coordinates
-        </h2>
+        </label>
 
-        <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+        <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
           <input
             type="text"
             className="input-field font-mono"
-            placeholder="e.g. https://github.com/owner/repo or C:\path\to\local\repo"
+            placeholder="e.g. https://github.com/owner/repo or C:\path\to\repo"
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSummon()}
             disabled={loading}
+            style={{ fontSize: "0.88rem" }}
           />
           <button
             onClick={() => handleSummon()}
             className="btn btn-primary"
             disabled={loading || !inputVal.trim()}
-            style={{ minWidth: 160, padding: "12px 24px" }}
+            style={{ minWidth: 160 }}
           >
             {loading ? (
               <>
-                <Loader2 size={18} className="ghost-float" /> Summoning...
+                <Loader2 size={16} className="ghost-float" /> Excavating...
               </>
             ) : (
               <>
-                Begin Séance <ArrowRight size={18} />
+                Begin Excavation <ArrowRight size={16} />
               </>
             )}
           </button>
@@ -96,92 +105,99 @@ export default function SummonView({ repositories, onSelectRepo, onAnalysisCompl
 
         {error && (
           <div style={{
-            background: "rgba(255, 71, 102, 0.1)",
-            border: "1px solid rgba(255, 71, 102, 0.3)",
+            background: "rgba(244, 63, 94, 0.1)",
+            border: "1px solid rgba(244, 63, 94, 0.3)",
             color: "var(--blood-crimson)",
-            padding: "10px 16px",
+            padding: "10px 14px",
             borderRadius: 8,
-            fontSize: "0.88rem",
-            marginBottom: 16
+            fontSize: "0.85rem",
+            marginBottom: 14
           }}>
             {error}
           </div>
         )}
 
         {/* Quick Presets */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", fontSize: "0.85rem" }}>
-          <span style={{ color: "var(--text-muted)" }}>Quick summon:</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", fontSize: "0.82rem" }}>
+          <span style={{ color: "var(--text-muted)" }}>Quick presets:</span>
           <button
             onClick={() => {
               setInputVal(".");
               handleSummon(".");
             }}
             className="btn btn-ghost"
-            style={{ padding: "4px 12px", fontSize: "0.8rem", borderRadius: 20 }}
+            style={{ padding: "4px 10px", fontSize: "0.78rem" }}
             disabled={loading}
           >
-            ✨ Current Repo (RepoSeance)
+            <Sparkles size={12} color="var(--spectral-teal)" /> Current Repo (RepoSeance)
           </button>
           <button
-            onClick={() => setInputVal("https://github.com/Samar-365/RepoSeance.git")}
+            onClick={() => {
+              setInputVal("https://github.com/Samar-365/RepoSeance.git");
+              handleSummon("https://github.com/Samar-365/RepoSeance.git");
+            }}
             className="btn btn-ghost"
-            style={{ padding: "4px 12px", fontSize: "0.8rem", borderRadius: 20 }}
+            style={{ padding: "4px 10px", fontSize: "0.78rem" }}
             disabled={loading}
           >
-            🌐 RepoSeance Remote GitHub
+            GitHub Origin URL
           </button>
         </div>
 
-        {/* Privacy Note */}
+        {/* Privacy Assurance */}
         <div style={{
-          marginTop: 24,
+          marginTop: 20,
           paddingTop: 16,
-          borderTop: "1px solid var(--border-dim)",
+          borderTop: "1px solid var(--border-subtle)",
           display: "flex",
           alignItems: "center",
           gap: 10,
           color: "var(--text-muted)",
-          fontSize: "0.82rem"
+          fontSize: "0.8rem"
         }}>
           <ShieldCheck size={16} color="var(--spectral-teal)" />
           <span>
-            <strong>Local-First Privacy:</strong> Repository source code and Git history are analyzed locally and queried through your local Gemma model. No private code is transmitted to external inference clouds.
+            <strong>Local-First Guarantee:</strong> Source code and Git history are analyzed entirely on your machine. AI queries run through your local Gemma model with zero cloud data transmission.
           </span>
         </div>
       </div>
 
-      {/* Previously Summoned Repositories */}
+      {/* Previously Excavated Repositories */}
       {repositories && repositories.length > 0 && (
         <div>
-          <h3 className="font-gothic" style={{
-            fontSize: "1.1rem",
-            color: "var(--text-secondary)",
+          <h2 className="font-gothic" style={{
+            fontSize: "1.2rem",
+            color: "var(--text-primary)",
             marginBottom: 16,
             display: "flex",
             alignItems: "center",
             gap: 8
           }}>
-            <History size={18} /> Resting in Crypt (Previously Analyzed)
-          </h3>
+            <History size={18} color="var(--spectral-amethyst)" /> Resting in Crypt (Analyzed Repositories)
+          </h2>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
             {repositories.map((repo) => (
               <div
                 key={repo.id}
                 onClick={() => onSelectRepo(repo.id)}
                 className="glass-panel glass-panel-interactive"
-                style={{ padding: 20, cursor: "pointer" }}
+                style={{ padding: 18, borderLeft: "3px solid var(--spectral-teal)" }}
               >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                  <h4 style={{ fontSize: "1.05rem", color: "var(--text-primary)" }}>{repo.name}</h4>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                  <h3 style={{ fontSize: "1.05rem", color: "#ffffff", fontWeight: 600 }}>
+                    {repo.name}
+                  </h3>
                   <span className="badge badge-teal">{repo.source_type}</span>
                 </div>
-                <div className="font-mono" style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: 12, wordBreak: "break-all" }}>
+                
+                <div className="font-mono" style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: 12, wordBreak: "break-all" }}>
                   {repo.path_or_url}
                 </div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.78rem", color: "var(--text-secondary)" }}>
                   <span>{repo.total_commits} commits indexed</span>
-                  <span style={{ color: "var(--spectral-teal)" }}>Enter Sanctum →</span>
+                  <span style={{ color: "var(--spectral-teal)", fontWeight: 500 }}>Enter Sanctum →</span>
                 </div>
               </div>
             ))}

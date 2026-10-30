@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { ScrollText, Download, Copy, Check, RefreshCw, Loader2, FileDown, BookOpen } from "lucide-react";
+import { ScrollText, Download, Copy, Check, RefreshCw, Loader2, FileDown, BookOpen, Sparkles } from "lucide-react";
 import { getReport, generateReport } from "../api/client";
+import MarkdownViewer from "../components/MarkdownViewer";
 
-export default function ReportView({ repository }) {
+export default function ReportView({ repository, onInspectEvidence }) {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -73,26 +74,37 @@ export default function ReportView({ repository }) {
     URL.revokeObjectURL(url);
   };
 
+  const handleCitationClick = (citation) => {
+    if (onInspectEvidence) {
+      onInspectEvidence({
+        source_type: citation.type,
+        source_identifier: citation.identifier,
+        source_location: "Cited in Resurrection Report",
+        content_excerpt: `Artifact: ${citation.raw}\n\nReferenced in Resurrection Scroll for ${repository.name}. Check Stratigraphy Timeline or Unfinished Vault to inspect full occurrence.`
+      });
+    }
+  };
+
   return (
-    <div style={{ maxWidth: 1050, margin: "24px auto", padding: "0 20px" }}>
+    <div style={{ maxWidth: 1080, margin: "24px auto", padding: "0 24px" }}>
       {/* Header */}
       <div style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        marginBottom: 24,
+        marginBottom: 28,
         paddingBottom: 16,
-        borderBottom: "1px solid var(--border-dim)",
+        borderBottom: "1px solid var(--border-subtle)",
         flexWrap: "wrap",
         gap: 16
       }}>
         <div>
-          <h2 className="font-gothic" style={{ fontSize: "1.8rem", color: "#fff", display: "flex", alignItems: "center", gap: 10 }}>
-            <ScrollText size={26} color="var(--spectral-amethyst)" />
+          <h1 className="font-gothic" style={{ fontSize: "1.9rem", color: "#ffffff", display: "flex", alignItems: "center", gap: 10 }}>
+            <ScrollText size={24} color="var(--spectral-amethyst)" />
             The Resurrection Scroll
-          </h2>
-          <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-            Synthesized Software Archaeology Report & Modern Revival Plan
+          </h1>
+          <span style={{ fontSize: "0.84rem", color: "var(--text-muted)" }}>
+            Synthesized Software Archaeology Audit & Modern Revival Blueprint
           </span>
         </div>
 
@@ -102,30 +114,30 @@ export default function ReportView({ repository }) {
             onClick={handleGenerate}
             className="btn btn-primary"
             disabled={generating}
-            style={{ padding: "8px 16px", fontSize: "0.85rem" }}
+            style={{ padding: "8px 16px", fontSize: "0.84rem" }}
           >
             {generating ? (
               <>
-                <Loader2 size={16} className="ghost-float" /> Synthesizing with Gemma...
+                <Loader2 size={15} className="ghost-float" /> Synthesizing with Gemma...
               </>
             ) : (
               <>
-                <RefreshCw size={15} /> {report ? "Regenerate Report" : "Generate Report"}
+                <RefreshCw size={14} /> {report ? "Regenerate Scroll" : "Synthesize Scroll"}
               </>
             )}
           </button>
 
           {report && (
             <>
-              <button onClick={handleCopy} className="btn btn-ghost" style={{ padding: "8px 14px", fontSize: "0.82rem" }}>
-                {copied ? <Check size={15} color="var(--spectral-teal)" /> : <Copy size={15} />}
-                {copied ? "Copied!" : "Copy"}
+              <button onClick={handleCopy} className="btn btn-ghost" style={{ padding: "8px 12px", fontSize: "0.82rem" }}>
+                {copied ? <Check size={14} color="var(--spectral-teal)" /> : <Copy size={14} />}
+                {copied ? "Copied" : "Copy"}
               </button>
-              <button onClick={handleDownloadMd} className="btn btn-ghost" style={{ padding: "8px 14px", fontSize: "0.82rem" }}>
-                <FileDown size={15} /> Export Markdown
+              <button onClick={handleDownloadMd} className="btn btn-ghost" style={{ padding: "8px 12px", fontSize: "0.82rem" }}>
+                <FileDown size={14} /> Markdown (.md)
               </button>
-              <button onClick={handleDownloadJson} className="btn btn-ghost" style={{ padding: "8px 14px", fontSize: "0.82rem" }}>
-                <Download size={15} /> Export JSON
+              <button onClick={handleDownloadJson} className="btn btn-ghost" style={{ padding: "8px 12px", fontSize: "0.82rem" }}>
+                <Download size={14} /> JSON (.json)
               </button>
             </>
           )}
@@ -136,33 +148,47 @@ export default function ReportView({ repository }) {
       {loading ? (
         <div style={{ textAlign: "center", padding: "60px 0", color: "var(--spectral-amethyst)" }}>
           <Loader2 size={32} className="ghost-float" style={{ margin: "0 auto 12px" }} />
-          <div>Retrieving scroll records...</div>
+          <div>Retrieving scroll records from database...</div>
         </div>
       ) : !report ? (
-        <div className="glass-panel" style={{ textAlign: "center", padding: "60px 20px" }}>
-          <ScrollText size={48} color="var(--spectral-amethyst)" style={{ margin: "0 auto 16px", opacity: 0.8 }} />
-          <h3 className="font-gothic" style={{ fontSize: "1.4rem", color: "#fff", marginBottom: 8 }}>
-            No Resurrection Scroll Has Been Inscribed
-          </h3>
-          <p style={{ color: "var(--text-secondary)", maxWidth: 520, margin: "0 auto 24px", lineHeight: 1.6 }}>
+        <div className="glass-panel" style={{ textAlign: "center", padding: "60px 24px" }}>
+          <div style={{
+            width: 60,
+            height: 60,
+            borderRadius: "50%",
+            background: "rgba(168, 85, 247, 0.12)",
+            border: "1px solid rgba(168, 85, 247, 0.3)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto 18px"
+          }}>
+            <ScrollText size={28} color="var(--spectral-amethyst)" />
+          </div>
+
+          <h2 className="font-gothic" style={{ fontSize: "1.4rem", color: "#ffffff", marginBottom: 8 }}>
+            No Resurrection Scroll Has Been Inscribed Yet
+          </h2>
+
+          <p style={{ color: "var(--text-secondary)", maxWidth: 520, margin: "0 auto 24px", lineHeight: 1.6, fontSize: "0.92rem" }}>
             Command the local Gemma model to analyze the full repository evidence base, commit milestones, and unfinished markers to produce a comprehensive revival audit.
           </p>
-          <button onClick={handleGenerate} className="btn btn-primary" disabled={generating} style={{ padding: "12px 28px" }}>
-            {generating ? <Loader2 size={18} className="ghost-float" /> : <RefreshCw size={18} />}
+
+          <button onClick={handleGenerate} className="btn btn-primary" disabled={generating} style={{ padding: "10px 24px" }}>
+            {generating ? <Loader2 size={16} className="ghost-float" /> : <Sparkles size={16} />}
             Inscribe Resurrection Report Now
           </button>
         </div>
       ) : (
-        <div className="glass-panel" style={{ padding: 36, lineHeight: 1.8 }}>
-          <pre style={{
-            fontFamily: "var(--font-sans)",
-            whiteSpace: "pre-wrap",
-            wordBreak: "break-word",
-            fontSize: "0.95rem",
-            color: "var(--text-primary)"
-          }}>
-            {report.content_markdown}
-          </pre>
+        <div className="glass-panel" style={{
+          padding: 36,
+          background: "linear-gradient(180deg, rgba(16, 21, 31, 0.85) 0%, rgba(12, 16, 24, 0.95) 100%)",
+          border: "1px solid var(--border-medium)"
+        }}>
+          <MarkdownViewer 
+            content={report.content_markdown} 
+            onCitationClick={handleCitationClick} 
+          />
         </div>
       )}
     </div>
