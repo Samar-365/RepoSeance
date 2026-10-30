@@ -1,26 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Skull, ShieldCheck, CheckCircle2, Terminal, Cpu, Database, Sparkles, BookOpen } from "lucide-react";
+import { useSectionProgress } from "../../hooks/useParallax";
 
-export default function OracleSection({ scrollY = 0, reducedMotion = false }) {
+export default function OracleSection({ reducedMotion = false }) {
+  const sectionRef = useRef(null);
+  const { progress } = useSectionProgress(sectionRef);
   const yFactor = reducedMotion ? 0 : 1;
-  const relativeY = Math.max(0, scrollY - 1200);
-  const terminalParallax = -(relativeY * 0.15 * yFactor);
+
+  // Counter-parallax: terminal moves up slightly, pillars move down slightly
+  const terminalY = progress * 40 * yFactor;
+  const pillarsY = progress * -30 * yFactor;
+  const sigilRotate = progress * 35 * yFactor;
 
   const [activeTab, setActiveTab] = useState("grounding");
 
   return (
     <section 
+      ref={sectionRef}
       id="oracle"
       style={{
         position: "relative",
-        padding: "120px 24px",
+        padding: "140px 24px",
         maxWidth: 1240,
         margin: "0 auto",
-        zIndex: 2
+        zIndex: 2,
+        overflow: "hidden"
       }}
     >
+      {/* Background Sacred Geometric Sigil Rotating with Scroll */}
+      <div 
+        style={{
+          position: "absolute",
+          top: "15%",
+          right: "5%",
+          width: 500,
+          height: 500,
+          pointerEvents: "none",
+          opacity: 0.12,
+          zIndex: 0,
+          transform: `translate3d(0, ${terminalY * 0.5}px, 0) rotate(${sigilRotate}deg)`,
+          transition: "transform 0.1s ease-out"
+        }}
+      >
+        <svg viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
+          <circle cx="250" cy="250" r="230" stroke="#a855f7" strokeWidth="1.5" strokeDasharray="6 8" />
+          <circle cx="250" cy="250" r="180" stroke="#00f5c4" strokeWidth="1" strokeDasharray="4 6" />
+          <polygon points="250,30 440,360 60,360" stroke="#00f5c4" strokeWidth="1" opacity="0.6" />
+          <polygon points="250,470 60,140 440,140" stroke="#a855f7" strokeWidth="1" opacity="0.6" />
+          <circle cx="250" cy="250" r="70" stroke="#ffffff" strokeWidth="0.8" opacity="0.8" />
+        </svg>
+      </div>
+
       {/* Act II Narrative Header */}
-      <div style={{ textAlign: "center", marginBottom: 60 }}>
+      <div style={{ textAlign: "center", marginBottom: 64, position: "relative", zIndex: 1 }}>
         <div style={{
           display: "inline-flex",
           alignItems: "center",
@@ -28,7 +60,7 @@ export default function OracleSection({ scrollY = 0, reducedMotion = false }) {
           fontSize: "0.8rem",
           color: "var(--spectral-amethyst)",
           fontFamily: "var(--font-mono)",
-          letterSpacing: "0.1em",
+          letterSpacing: "0.12em",
           marginBottom: 12
         }}>
           <span>ACT II</span>
@@ -37,7 +69,7 @@ export default function OracleSection({ scrollY = 0, reducedMotion = false }) {
         </div>
 
         <h2 className="font-gothic" style={{
-          fontSize: "clamp(2rem, 4vw, 3rem)",
+          fontSize: "clamp(2.1rem, 4.2vw, 3.2rem)",
           fontWeight: 700,
           marginBottom: 16
         }}>
@@ -49,21 +81,29 @@ export default function OracleSection({ scrollY = 0, reducedMotion = false }) {
           maxWidth: 680,
           margin: "0 auto",
           fontSize: "1.05rem",
-          lineHeight: 1.6
+          lineHeight: 1.65
         }}>
           Standard LLMs invent fictional commit histories and invent nonexistent functions. The Repository Ghost is constrained by an unyielding anti-hallucination pact: it speaks only of what survives in the archaeological record.
         </p>
       </div>
 
-      {/* Main Dual-Chamber Interactive Display */}
+      {/* Main Dual-Chamber Display */}
       <div style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-        gap: 24,
-        alignItems: "center"
+        gap: 26,
+        alignItems: "center",
+        position: "relative",
+        zIndex: 1
       }}>
         {/* Left Column: Architectural Pillars */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
+          transform: `translate3d(0, ${pillarsY}px, 0)`,
+          transition: "transform 0.1s ease-out"
+        }}>
           {/* Pillar 1 */}
           <div 
             onClick={() => setActiveTab("grounding")}
@@ -73,16 +113,16 @@ export default function OracleSection({ scrollY = 0, reducedMotion = false }) {
               borderRadius: 12,
               cursor: "pointer",
               borderLeft: activeTab === "grounding" ? "4px solid var(--spectral-teal)" : "1px solid var(--border-subtle)",
-              background: activeTab === "grounding" ? "rgba(0, 245, 196, 0.05)" : "var(--bg-glass)"
+              background: activeTab === "grounding" ? "rgba(0, 245, 196, 0.06)" : "var(--bg-glass)"
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
               <CheckCircle2 size={18} color="var(--spectral-teal)" />
               <h3 style={{ fontSize: "1.05rem", color: "#ffffff", fontWeight: 600 }}>
                 Strict Evidence Citations
               </h3>
             </div>
-            <p style={{ fontSize: "0.86rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+            <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", lineHeight: 1.55 }}>
               Every factual assertion requires an unshakeable citation tag—[Commit &lt;hash&gt;], [File &lt;path&gt;:&lt;line&gt;], or [Issue #&lt;number&gt;]. If the surviving records are inconclusive, the Ghost explicitly admits uncertainty.
             </p>
           </div>
@@ -96,16 +136,16 @@ export default function OracleSection({ scrollY = 0, reducedMotion = false }) {
               borderRadius: 12,
               cursor: "pointer",
               borderLeft: activeTab === "local" ? "4px solid var(--spectral-amethyst)" : "1px solid var(--border-subtle)",
-              background: activeTab === "local" ? "rgba(168, 85, 247, 0.05)" : "var(--bg-glass)"
+              background: activeTab === "local" ? "rgba(168, 85, 247, 0.06)" : "var(--bg-glass)"
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
               <ShieldCheck size={18} color="var(--spectral-amethyst)" />
               <h3 style={{ fontSize: "1.05rem", color: "#ffffff", fontWeight: 600 }}>
                 100% Local Privacy Guarantee
               </h3>
             </div>
-            <p style={{ fontSize: "0.86rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+            <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", lineHeight: 1.55 }}>
               Untrusted source code is never transmitted to cloud AI endpoints. All token inference runs locally using Google Gemma 2 models via Ollama on your machine.
             </p>
           </div>
@@ -119,16 +159,16 @@ export default function OracleSection({ scrollY = 0, reducedMotion = false }) {
               borderRadius: 12,
               cursor: "pointer",
               borderLeft: activeTab === "fts5" ? "4px solid var(--ancient-amber)" : "1px solid var(--border-subtle)",
-              background: activeTab === "fts5" ? "rgba(245, 158, 11, 0.05)" : "var(--bg-glass)"
+              background: activeTab === "fts5" ? "rgba(245, 158, 11, 0.06)" : "var(--bg-glass)"
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
               <Database size={18} color="var(--ancient-amber)" />
               <h3 style={{ fontSize: "1.05rem", color: "#ffffff", fontWeight: 600 }}>
                 Millisecond SQLite FTS5 Search
               </h3>
             </div>
-            <p style={{ fontSize: "0.86rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+            <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", lineHeight: 1.55 }}>
               Zero heavy vector databases or complex cloud infrastructure. A lightweight SQLite full-text search (BM25) index extracts exact commit diffs and code snippets in under 5 milliseconds.
             </p>
           </div>
@@ -141,9 +181,9 @@ export default function OracleSection({ scrollY = 0, reducedMotion = false }) {
             borderRadius: 14,
             overflow: "hidden",
             borderColor: "var(--border-medium)",
-            boxShadow: "0 20px 50px rgba(0, 0, 0, 0.6), 0 0 35px rgba(0, 245, 196, 0.12)",
-            transform: `translate3d(0, ${terminalParallax}px, 0)`,
-            transition: "transform 0.08s linear"
+            boxShadow: "0 22px 55px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 245, 196, 0.12)",
+            transform: `translate3d(0, ${terminalY}px, 0)`,
+            transition: "transform 0.1s ease-out"
           }}
         >
           {/* Terminal Title Bar */}
@@ -172,7 +212,7 @@ export default function OracleSection({ scrollY = 0, reducedMotion = false }) {
           {/* Terminal Screen Body */}
           <div style={{
             background: "#06080d",
-            padding: 22,
+            padding: 24,
             fontFamily: "var(--font-mono)",
             fontSize: "0.84rem",
             lineHeight: 1.65,
@@ -189,7 +229,7 @@ export default function OracleSection({ scrollY = 0, reducedMotion = false }) {
               background: "rgba(255, 255, 255, 0.03)",
               border: "1px solid var(--border-subtle)",
               borderRadius: 6,
-              padding: "10px 14px",
+              padding: "12px 14px",
               marginBottom: 16,
               fontSize: "0.78rem",
               color: "var(--text-muted)"
@@ -205,11 +245,11 @@ export default function OracleSection({ scrollY = 0, reducedMotion = false }) {
               paddingLeft: 14,
               color: "var(--text-primary)"
             }}>
-              <div style={{ color: "var(--spectral-teal)", fontWeight: 600, marginBottom: 4, display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ color: "var(--spectral-teal)", fontWeight: 600, marginBottom: 6, display: "flex", alignItems: "center", gap: 6 }}>
                 <Skull size={14} />
                 <span>Repository Ghost replies:</span>
               </div>
-              <p style={{ fontSize: "0.83rem", color: "#cbd5e1", lineHeight: 1.6 }}>
+              <p style={{ fontSize: "0.84rem", color: "#cbd5e1", lineHeight: 1.65 }}>
                 "The records show the caching layer was eliminated in <span className="evidence-chip">[Commit 8999ce8]</span> after recurring thread deadlocks crippled the worker pool. A lingering reminder remains at <span className="evidence-chip">[File backend/config.py:18]</span> acknowledging the need for a substitute, but no subsequent commits addressed it before the codebase went silent."
               </p>
             </div>

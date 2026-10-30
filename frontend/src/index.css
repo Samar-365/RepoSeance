@@ -388,6 +388,23 @@ h1, h2, h3, h4, .font-gothic {
   margin: 1.8em 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* Responsive Parallax Display Controls */
+@media (min-width: 1100px) {
+  .desktop-only-relic {
+    display: block !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .desktop-timeline-axis {
+    display: block !important;
+  }
+}
+
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

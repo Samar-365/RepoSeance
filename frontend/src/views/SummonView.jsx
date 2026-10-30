@@ -7,7 +7,7 @@ import OracleSection from "../components/parallax/OracleSection";
 import SummonAltarSection from "../components/parallax/SummonAltarSection";
 
 export default function SummonView({ repositories, onSelectRepo, onAnalysisComplete }) {
-  const { scrollY, reducedMotion } = useParallax();
+  const { scrollY, mousePos, reducedMotion } = useParallax();
 
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
@@ -24,20 +24,19 @@ export default function SummonView({ repositories, onSelectRepo, onAnalysisCompl
       {/* Hero Narrative Act (The Necropolis of Code) */}
       <HeroSection 
         scrollY={scrollY} 
+        mousePos={mousePos}
         reducedMotion={reducedMotion} 
         onExplore={() => scrollToSection("stratigraphy")}
         onSummonClick={() => scrollToSection("altar")}
       />
 
-      {/* Act I: The Stratigraphy of Time (Geological Drilldown) */}
+      {/* Act I: The Stratigraphy of Time (Geological Drilldown with Individual Depth Velocity) */}
       <StratigraphySection 
-        scrollY={scrollY} 
         reducedMotion={reducedMotion} 
       />
 
-      {/* Act II: The Oracle in the Crypt (Anti-Hallucination Grounding) */}
+      {/* Act II: The Oracle in the Crypt (Anti-Hallucination Grounding & Sacred Sigil) */}
       <OracleSection 
-        scrollY={scrollY} 
         reducedMotion={reducedMotion} 
       />
 

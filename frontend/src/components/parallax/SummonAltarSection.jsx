@@ -261,3 +261,4 @@ export default function SummonAltarSection({ repositories, onSelectRepo, onAnaly
     </section>
   );
 }
+

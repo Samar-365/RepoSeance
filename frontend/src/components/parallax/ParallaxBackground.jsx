@@ -119,3 +119,4 @@ export default function ParallaxBackground({ scrollY = 0, reducedMotion = false 
     </div>
   );
 }
+
