@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import EvidenceModal from "./components/EvidenceModal";
+import LandingView from "./views/LandingView";
 import SummonView from "./views/SummonView";
 import DashboardView from "./views/DashboardView";
 import SeanceChatView from "./views/SeanceChatView";
@@ -10,7 +11,7 @@ import ReportView from "./views/ReportView";
 import { checkHealth, listRepositories, getRepository } from "./api/client";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("summon");
+  const [activeTab, setActiveTab] = useState("landing");
   const [currentRepo, setCurrentRepo] = useState(null);
   const [repositories, setRepositories] = useState([]);
   const [ollamaStatus, setOllamaStatus] = useState(null);
@@ -30,9 +31,12 @@ export default function App() {
       const list = reposData.repositories || [];
       setRepositories(list);
 
-      // If no repo currently active and repos exist, pick the most recent one
+      // Pre-load current repo data if available, but do NOT force tab change away from landing
       if (list.length > 0 && !currentRepo) {
-        selectRepository(list[0].id);
+        try {
+          const data = await getRepository(list[0].id);
+          setCurrentRepo(data.repository);
+        } catch (_) {}
       }
     } catch (e) {
       console.error(e);
@@ -67,10 +71,21 @@ export default function App() {
         currentRepo={currentRepo}
         ollamaStatus={ollamaStatus}
         onOpenSummon={() => setActiveTab("summon")}
+        onGoHome={() => setActiveTab("landing")}
       />
 
       {/* Main View Area */}
       <main style={{ flex: 1 }}>
+        {activeTab === "landing" && (
+          <LandingView
+            onGoToSummon={() => setActiveTab("summon")}
+            repositories={repositories}
+            currentRepo={currentRepo}
+            onSelectRepo={selectRepository}
+            ollamaStatus={ollamaStatus}
+          />
+        )}
+
         {activeTab === "summon" && (
           <SummonView
             repositories={repositories}

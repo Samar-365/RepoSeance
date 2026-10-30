@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { AlertCircle, Bug, GitBranch, FileText, Loader2, Copy, Check } from "lucide-react";
 import { getUnfinished } from "../api/client";
 import MinimalGhostBackground from "../components/MinimalGhostBackground";
+import { ArtifactScanIllustration, ExcavationBannerIllustration } from "../components/ThemeIllustrations";
 
 export default function UnfinishedView({ repository, onInspectEvidence }) {
   const [items, setItems] = useState([]);
@@ -36,9 +37,9 @@ export default function UnfinishedView({ repository, onInspectEvidence }) {
 
   const getSeverityBadge = (sev) => {
     switch (sev) {
-      case "high": return <span className="badge badge-red">High</span>;
-      case "medium": return <span className="badge badge-amber">Medium</span>;
-      default: return <span className="badge badge-blue">Low</span>;
+      case "high": return <span className="badge badge-red" style={{ fontSize: "0.68rem" }}>High</span>;
+      case "medium": return <span className="badge badge-amber" style={{ fontSize: "0.68rem" }}>Medium</span>;
+      default: return <span className="badge badge-blue" style={{ fontSize: "0.68rem" }}>Low</span>;
     }
   };
 
@@ -55,8 +56,8 @@ export default function UnfinishedView({ repository, onInspectEvidence }) {
     <div style={{ position: "relative", minHeight: "calc(100vh - 64px)", padding: "28px 24px" }}>
       <MinimalGhostBackground />
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
-        {/* Title Bar */}
+      <div style={{ maxWidth: 1050, margin: "0 auto", position: "relative", zIndex: 1 }}>
+        {/* Title Bar with Theme Graphic */}
         <div style={{
           display: "flex",
           alignItems: "center",
@@ -65,19 +66,21 @@ export default function UnfinishedView({ repository, onInspectEvidence }) {
           paddingBottom: 16,
           borderBottom: "1px solid var(--border-subtle)",
           flexWrap: "wrap",
-          gap: 12
+          gap: 14
         }}>
-          <div>
-            <h1 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
-              <AlertCircle size={20} color="var(--accent-warning)" />
-              Issues & Markers
-            </h1>
-            <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-              TODOs, FIXMEs, abandoned branches, and unfinished items ({items.length})
-            </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <ArtifactScanIllustration size={52} />
+            <div>
+              <h1 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#fff", margin: 0 }}>
+                Issues & Markers
+              </h1>
+              <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
+                TODOs, FIXMEs, and abandoned branches ({items.length})
+              </span>
+            </div>
           </div>
 
-          {/* Severity Pills */}
+          {/* Severity Filters */}
           <div style={{ display: "flex", gap: 6 }}>
             <button
               onClick={() => setSeverity("")}
@@ -100,104 +103,113 @@ export default function UnfinishedView({ repository, onInspectEvidence }) {
             >
               Medium
             </button>
+            <button
+              onClick={() => setSeverity("low")}
+              className={`btn ${severity === "low" ? "btn-primary" : "btn-ghost"}`}
+              style={{ padding: "4px 10px", fontSize: "0.78rem" }}
+            >
+              Low
+            </button>
           </div>
         </div>
 
-        {/* Category Tabs */}
-        <div style={{ display: "flex", gap: 6, marginBottom: 18, flexWrap: "wrap" }}>
-          <button
-            onClick={() => setCategory("")}
-            className={`btn ${category === "" ? "btn-primary" : "btn-ghost"}`}
-            style={{ padding: "5px 12px", fontSize: "0.8rem" }}
-          >
-            All Categories ({items.length})
-          </button>
-          {Object.entries(breakdown).map(([cat, count]) => (
-            <button
-              key={cat}
-              onClick={() => setCategory(cat)}
-              className={`btn ${category === cat ? "btn-primary" : "btn-ghost"}`}
-              style={{ padding: "5px 12px", fontSize: "0.8rem", textTransform: "capitalize" }}
-            >
-              {cat.replace("_", " ")} ({count})
-            </button>
-          ))}
+        {/* Minimalist Excavation Stratum Banner */}
+        <div style={{ marginBottom: 20 }}>
+          <ExcavationBannerIllustration />
         </div>
 
-        {/* Items List */}
+        {/* Content Stream */}
         {loading ? (
-          <div style={{ textAlign: "center", padding: "60px 0", color: "var(--accent-warning)", fontSize: "0.86rem" }}>
+          <div style={{ textAlign: "center", padding: "60px 0", color: "var(--accent-primary)", fontSize: "0.86rem" }}>
             <Loader2 size={24} className="pulse-dot" style={{ margin: "0 auto 8px" }} />
-            <div>Scanning markers...</div>
+            <div>Excavating markers from codebase...</div>
           </div>
         ) : items.length === 0 ? (
           <div className="card" style={{ textAlign: "center", padding: 36, color: "var(--text-muted)", fontSize: "0.86rem" }}>
-            No unfinished items match the selected filter.
+            No unfinished items match your filter criteria.
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {items.map((item) => (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {items.map((item, idx) => (
               <div
-                key={item.id}
-                onClick={() => onInspectEvidence({
-                  source_type: "code",
-                  source_identifier: `${item.file_path}:${item.line_number}`,
-                  source_location: item.file_path,
-                  content_excerpt: `${item.title}\nCategory: ${item.category}\nSeverity: ${item.severity}\n\nSnippet:\n${item.snippet}`
-                })}
-                className="card card-interactive"
-                style={{ padding: 16 }}
+                key={item.id || idx}
+                className="card"
+                style={{
+                  padding: "12px 16px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 14
+                }}
               >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, marginBottom: 8 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, flex: 1 }}>
+                  <div style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 6,
+                    background: "rgba(255, 255, 255, 0.02)",
+                    border: "1px solid var(--border-subtle)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0
+                  }}>
                     {getCategoryIcon(item.category)}
-                    <h3 style={{ fontSize: "0.95rem", color: "#fff", fontWeight: 600 }}>
-                      {item.title}
-                    </h3>
                   </div>
-                  {getSeverityBadge(item.severity)}
+
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                      <span className="font-mono" style={{
+                        fontSize: "0.82rem",
+                        color: "#fff",
+                        fontWeight: 600,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap"
+                      }}>
+                        {item.file_path} {item.line_number ? `:${item.line_number}` : ""}
+                      </span>
+                      {getSeverityBadge(item.severity)}
+                    </div>
+
+                    <div style={{
+                      fontSize: "0.78rem",
+                      color: "var(--text-secondary)",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap"
+                    }}>
+                      {item.title || item.snippet}
+                    </div>
+                  </div>
                 </div>
 
-                {item.snippet && (
-                  <pre className="font-mono" style={{
-                    background: "#06080c",
-                    padding: "8px 12px",
-                    borderRadius: 5,
-                    fontSize: "0.78rem",
-                    color: "#cbd5e1",
-                    marginBottom: 8,
-                    whiteSpace: "pre-wrap",
-                    overflowX: "auto"
-                  }}>
-                    {item.snippet}
-                  </pre>
-                )}
-
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.74rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCopyPath(item.file_path);
-                    }}
-                    className="font-mono btn-ghost"
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 4,
-                      padding: "2px 6px",
-                      borderRadius: 4,
-                      color: "var(--text-muted)",
-                      cursor: "pointer"
-                    }}
-                    title="Copy path"
+                    onClick={() => handleCopyPath(item.file_path)}
+                    className="btn btn-ghost"
+                    style={{ padding: "3px 7px", fontSize: "0.72rem" }}
+                    title="Copy file path"
                   >
-                    {copiedPath === item.file_path ? <Check size={11} color="var(--accent-success)" /> : <Copy size={11} />}
-                    <span>{item.file_path}{item.line_number > 0 ? `#L${item.line_number}` : ""}</span>
+                    {copiedPath === item.file_path ? (
+                      <Check size={11} color="var(--accent-success)" />
+                    ) : (
+                      <Copy size={11} />
+                    )}
                   </button>
 
-                  <span style={{ color: "var(--accent-primary)", fontWeight: 500 }}>
-                    Inspect Details →
-                  </span>
+                  <button
+                    onClick={() => onInspectEvidence({
+                      source_type: item.category || "marker",
+                      source_identifier: `${item.file_path}:${item.line_number || 1}`,
+                      source_location: item.title,
+                      content_excerpt: `File: ${item.file_path}\nLine: ${item.line_number || "N/A"}\nCategory: ${item.category}\nSeverity: ${item.severity}\n\nSnippet:\n${item.snippet}`
+                    })}
+                    className="btn btn-ghost"
+                    style={{ padding: "3px 8px", fontSize: "0.72rem" }}
+                  >
+                    Inspect
+                  </button>
                 </div>
               </div>
             ))}

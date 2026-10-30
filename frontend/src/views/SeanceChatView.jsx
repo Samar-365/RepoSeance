@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Ghost, Send, Loader2, BookOpen, X, Copy, Check } from "lucide-react";
+import { Ghost, Send, Loader2, BookOpen, X, Copy, Check, Sparkles, Terminal } from "lucide-react";
 import { seanceChat } from "../api/client";
 import MarkdownViewer from "../components/MarkdownViewer";
 import MinimalGhostBackground from "../components/MinimalGhostBackground";
+import { SmallGhostOracle } from "../components/ThemeIllustrations";
 
 const SUGGESTIONS = [
   "What is the main purpose of this repository?",
@@ -276,10 +277,10 @@ export default function SeanceChatView({ repository, onInspectEvidence }) {
         </div>
       </div>
 
-      {/* Side Evidence Drawer */}
-      {activeRelic && (
+      {/* Right-Side Panel: Either Evidence Inspector OR Assistant Mascot Widget */}
+      {activeRelic ? (
         <div className="card" style={{
-          width: 360,
+          width: 320,
           display: "flex",
           flexDirection: "column",
           borderRadius: 8,
@@ -316,6 +317,7 @@ export default function SeanceChatView({ repository, onInspectEvidence }) {
                 onClick={() => setActiveRelic(null)}
                 className="btn btn-ghost"
                 style={{ padding: "3px 6px" }}
+                title="Close"
               >
                 <X size={13} />
               </button>
@@ -359,6 +361,58 @@ export default function SeanceChatView({ repository, onInspectEvidence }) {
             >
               Expand Full Modal
             </button>
+          </div>
+        </div>
+      ) : (
+        /* Small Side Mascot Card placed at the right side */
+        <div className="card" style={{
+          width: 260,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+          padding: "20px 16px",
+          borderRadius: 8,
+          position: "relative",
+          zIndex: 1,
+          justifyContent: "space-between"
+        }}>
+          <div>
+            {/* Small Ghost Mascot */}
+            <div style={{ marginBottom: 12 }}>
+              <SmallGhostOracle size={76} />
+            </div>
+
+            <h3 style={{ fontSize: "0.95rem", fontWeight: 600, color: "#fff", marginBottom: 4 }}>
+              Codebase Assistant
+            </h3>
+            
+            <p style={{ fontSize: "0.78rem", color: "var(--text-secondary)", lineHeight: 1.45, margin: "0 0 14px" }}>
+              Grounded answers with exact commit SHAs and line diffs.
+            </p>
+
+            <div style={{
+              padding: "6px 10px",
+              background: "rgba(255, 255, 255, 0.02)",
+              border: "1px solid var(--border-subtle)",
+              borderRadius: 6,
+              fontSize: "0.74rem",
+              color: "var(--text-muted)",
+              marginBottom: 14,
+              textAlign: "left"
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                <Terminal size={12} color="var(--accent-primary)" />
+                <span style={{ color: "#fff", fontWeight: 500 }}>{repository.name}</span>
+              </div>
+              <div>Commits: <span style={{ color: "var(--text-primary)" }}>{repository.total_commits || 0}</span></div>
+            </div>
+          </div>
+
+          <div style={{ width: "100%", borderTop: "1px solid var(--border-subtle)", paddingTop: 12 }}>
+            <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
+              Select any citation in chat to inspect evidence.
+            </span>
           </div>
         </div>
       )}

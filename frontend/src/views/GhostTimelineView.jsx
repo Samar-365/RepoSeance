@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { GitCommit, Search, Sparkles, Calendar, User, FileText, Loader2, Copy, Check } from "lucide-react";
 import { getTimeline } from "../api/client";
 import MinimalGhostBackground from "../components/MinimalGhostBackground";
+import { TimelineGhostIllustration, TimelineBannerIllustration } from "../components/ThemeIllustrations";
 
 export default function GhostTimelineView({ repository, onInspectEvidence }) {
   const [commits, setCommits] = useState([]);
@@ -52,14 +53,16 @@ export default function GhostTimelineView({ repository, onInspectEvidence }) {
           borderBottom: "1px solid var(--border-subtle)",
           flexWrap: "wrap"
         }}>
-          <div>
-            <h1 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
-              <GitCommit size={20} color="var(--accent-primary)" />
-              Timeline
-            </h1>
-            <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-              Chronological commit history ({commits.length} commits)
-            </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <TimelineGhostIllustration size={52} />
+            <div>
+              <h1 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#fff", margin: 0 }}>
+                Timeline
+              </h1>
+              <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
+                Chronological commit graph ({commits.length} commits)
+              </span>
+            </div>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -68,7 +71,7 @@ export default function GhostTimelineView({ repository, onInspectEvidence }) {
               <input
                 type="text"
                 className="input-field font-mono"
-                placeholder="Filter commits or authors..."
+                placeholder="Filter commit or author..."
                 style={{ paddingLeft: 30, fontSize: "0.8rem" }}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -87,6 +90,11 @@ export default function GhostTimelineView({ repository, onInspectEvidence }) {
           </div>
         </div>
 
+        {/* Minimalist Theme Illustration Banner */}
+        <div style={{ marginBottom: 20 }}>
+          <TimelineBannerIllustration />
+        </div>
+
         {/* Commit Stream */}
         {loading ? (
           <div style={{ textAlign: "center", padding: "60px 0", color: "var(--accent-primary)", fontSize: "0.86rem" }}>
@@ -98,89 +106,91 @@ export default function GhostTimelineView({ repository, onInspectEvidence }) {
             No commits match your filter criteria.
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {commits.map((c) => {
-              const dateStr = c.committed_at ? c.committed_at.slice(0, 10) : "";
-              const shortHash = c.commit_hash ? c.commit_hash.slice(0, 8) : "";
-
-              return (
-                <div key={c.id} className="card" style={{ padding: "14px 18px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <button
-                        onClick={() => handleCopyHash(c.commit_hash)}
-                        className="badge badge-blue"
-                        style={{ cursor: "pointer" }}
-                        title="Copy commit hash"
-                      >
-                        {copiedHash === c.commit_hash ? <Check size={10} /> : <Copy size={10} />}
-                        <span>{shortHash}</span>
-                      </button>
-
-                      {c.is_significant && (
-                        <span className="badge badge-purple">
-                          <Sparkles size={10} /> Milestone
-                        </span>
-                      )}
-
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}>
-                        <Calendar size={11} /> {dateStr}
-                      </span>
-                    </div>
-
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.76rem", fontFamily: "var(--font-mono)" }}>
-                      {c.files_changed_count > 0 && (
-                        <span style={{ color: "var(--text-muted)" }}>{c.files_changed_count} files</span>
-                      )}
-                      {c.insertions > 0 && (
-                        <span style={{ color: "var(--accent-success)" }}>+{c.insertions}</span>
-                      )}
-                      {c.deletions > 0 && (
-                        <span style={{ color: "var(--accent-danger)" }}>-{c.deletions}</span>
-                      )}
-                    </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {commits.map((commit, idx) => (
+              <div
+                key={commit.hash || idx}
+                className="card"
+                style={{
+                  padding: "12px 16px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 14,
+                  borderLeft: commit.is_significant ? "3px solid var(--accent-primary)" : "1px solid var(--border-subtle)"
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, flex: 1 }}>
+                  <div style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 6,
+                    background: commit.is_significant ? "var(--accent-primary-dim)" : "rgba(255, 255, 255, 0.02)",
+                    border: "1px solid var(--border-subtle)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0
+                  }}>
+                    <GitCommit size={14} color={commit.is_significant ? "var(--accent-primary)" : "var(--text-muted)"} />
                   </div>
 
-                  <div style={{ fontSize: "0.92rem", fontWeight: 500, color: "#fff", marginBottom: 8 }}>
-                    {c.message}
-                  </div>
-
-                  {c.significance_reason && (
+                  <div style={{ minWidth: 0 }}>
                     <div style={{
-                      fontSize: "0.76rem",
-                      color: "var(--text-secondary)",
-                      background: "rgba(129, 140, 248, 0.08)",
-                      border: "1px solid rgba(129, 140, 248, 0.2)",
-                      padding: "4px 8px",
-                      borderRadius: 4,
-                      marginBottom: 8
+                      fontWeight: 600,
+                      color: "#fff",
+                      fontSize: "0.88rem",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap"
                     }}>
-                      {c.significance_reason}
+                      {commit.message}
                     </div>
-                  )}
 
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                    <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                      <User size={11} /> {c.author_name}
-                    </span>
-
-                    <button
-                      onClick={() => onInspectEvidence({
-                        source_type: "commit",
-                        source_identifier: c.commit_hash,
-                        source_location: `Commit ${shortHash}`,
-                        content_excerpt: `Commit ${c.commit_hash} by ${c.author_name} (${dateStr}):\n${c.message}\n\nFiles changed: ${c.files_changed_count} (+${c.insertions} / -${c.deletions})`
-                      })}
-                      className="btn btn-ghost"
-                      style={{ padding: "3px 8px", fontSize: "0.72rem" }}
-                    >
-                      <FileText size={11} color="var(--accent-primary)" />
-                      Inspect Diff
-                    </button>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: "0.75rem", color: "var(--text-muted)", marginTop: 2 }}>
+                      <span style={{ color: "var(--text-secondary)" }}>{commit.author}</span>
+                      <span>&bull;</span>
+                      <span>{commit.committed_at?.slice(0, 10)}</span>
+                      {commit.insertions !== undefined && (
+                        <>
+                          <span>&bull;</span>
+                          <span style={{ color: "var(--accent-success)" }}>+{commit.insertions}</span>
+                          <span style={{ color: "var(--accent-danger)" }}>-{commit.deletions}</span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
-              );
-            })}
+
+                <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                  <button
+                    onClick={() => handleCopyHash(commit.hash)}
+                    className="btn btn-ghost font-mono"
+                    style={{ padding: "3px 7px", fontSize: "0.72rem" }}
+                    title="Copy full SHA"
+                  >
+                    {copiedHash === commit.hash ? (
+                      <Check size={11} color="var(--accent-success)" />
+                    ) : (
+                      <span>{commit.hash?.slice(0, 7)}</span>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => onInspectEvidence({
+                      source_type: "commit",
+                      source_identifier: commit.hash,
+                      source_location: commit.message,
+                      content_excerpt: `Commit: ${commit.hash}\nAuthor: ${commit.author} <${commit.author_email}>\nDate: ${commit.committed_at}\n\n${commit.message}\n\nDiff Summary:\nFiles changed: ${commit.files_changed || 1}\nInsertions: +${commit.insertions || 0}\nDeletions: -${commit.deletions || 0}`
+                    })}
+                    className="btn btn-ghost"
+                    style={{ padding: "3px 8px", fontSize: "0.72rem" }}
+                  >
+                    Inspect
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

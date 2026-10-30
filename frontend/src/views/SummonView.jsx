@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Ghost, ArrowRight, Loader2, Sparkles, FolderGit2, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Loader2, Sparkles, FolderGit2, CheckCircle2 } from "lucide-react";
 import { analyzeRepository } from "../api/client";
 import MinimalGhostBackground from "../components/MinimalGhostBackground";
+import { SummonAltarIllustration } from "../components/ThemeIllustrations";
 
 export default function SummonView({ repositories, onSelectRepo, onAnalysisComplete }) {
   const [inputVal, setInputVal] = useState("");
@@ -28,34 +29,23 @@ export default function SummonView({ repositories, onSelectRepo, onAnalysisCompl
     <div style={{ position: "relative", minHeight: "calc(100vh - 64px)", padding: "40px 20px" }}>
       <MinimalGhostBackground />
 
-      <div style={{ maxWidth: 840, margin: "0 auto", position: "relative", zIndex: 1 }}>
-        {/* Simple Header */}
-        <div style={{ textAlign: "center", marginBottom: 36 }}>
-          <div style={{ display: "inline-flex", marginBottom: 12 }}>
-            <div style={{
-              width: 50,
-              height: 50,
-              borderRadius: "50%",
-              background: "var(--accent-primary-dim)",
-              border: "1px solid rgba(56, 189, 248, 0.25)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center"
-            }}>
-              <Ghost size={24} color="var(--accent-primary)" />
-            </div>
+      <div style={{ maxWidth: 780, margin: "0 auto", position: "relative", zIndex: 1 }}>
+        {/* Header with Minimalist Summon Illustration */}
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <div style={{ display: "inline-flex", marginBottom: 16 }}>
+            <SummonAltarIllustration size={90} />
           </div>
 
-          <h1 style={{ fontSize: "1.9rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>
-            RepoSeance
+          <h1 style={{ fontSize: "1.75rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>
+            Index a Repository
           </h1>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>
-            Software archaeology and codebase understanding powered by local AI.
+          <p style={{ color: "var(--text-secondary)", fontSize: "0.92rem", margin: 0 }}>
+            Enter a local directory path or remote Git URL to index history, diffs, and markers.
           </p>
         </div>
 
         {/* Analyze Input Card */}
-        <div className="card" style={{ padding: "24px 20px", marginBottom: 32 }}>
+        <div className="card" style={{ padding: "20px", marginBottom: 32 }}>
           <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
             <input
               type="text"
@@ -75,11 +65,11 @@ export default function SummonView({ repositories, onSelectRepo, onAnalysisCompl
             >
               {loading ? (
                 <>
-                  <Loader2 size={15} className="pulse-dot" /> Analyzing...
+                  <Loader2 size={15} className="pulse-dot" /> Indexing...
                 </>
               ) : (
                 <>
-                  <span>Analyze</span>
+                  <span>Index</span>
                   <ArrowRight size={15} />
                 </>
               )}
@@ -102,7 +92,7 @@ export default function SummonView({ repositories, onSelectRepo, onAnalysisCompl
 
           {/* Quick Presets */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", fontSize: "0.8rem" }}>
-            <span style={{ color: "var(--text-muted)" }}>Quick presets:</span>
+            <span style={{ color: "var(--text-muted)", fontSize: "0.76rem" }}>Presets:</span>
             <button
               onClick={() => {
                 setInputVal(".");
@@ -113,7 +103,7 @@ export default function SummonView({ repositories, onSelectRepo, onAnalysisCompl
               disabled={loading}
             >
               <Sparkles size={11} color="var(--accent-primary)" />
-              <span>Current Repo (RepoSeance)</span>
+              <span>Current Repo (.)</span>
             </button>
 
             <button
@@ -134,33 +124,33 @@ export default function SummonView({ repositories, onSelectRepo, onAnalysisCompl
         {repositories && repositories.length > 0 && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-              <h2 style={{ fontSize: "0.95rem", fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                Analyzed Repositories ({repositories.length})
-              </h2>
+              <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                Indexed Repositories ({repositories.length})
+              </span>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 10 }}>
               {repositories.map((repo) => (
                 <div
                   key={repo.id}
                   onClick={() => onSelectRepo(repo.id)}
                   className="card card-interactive"
-                  style={{ padding: "16px 18px" }}
+                  style={{ padding: "14px 16px" }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-                    <span style={{ fontWeight: 600, color: "#fff", fontSize: "0.95rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                    <span style={{ fontWeight: 600, color: "#fff", fontSize: "0.9rem" }}>
                       {repo.name}
                     </span>
-                    <span className="badge badge-blue">{repo.source_type}</span>
+                    <span className="badge badge-blue" style={{ fontSize: "0.68rem" }}>{repo.source_type}</span>
                   </div>
 
-                  <div className="font-mono" style={{ fontSize: "0.74rem", color: "var(--text-muted)", marginBottom: 12, wordBreak: "break-all" }}>
+                  <div className="font-mono" style={{ fontSize: "0.74rem", color: "var(--text-muted)", marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {repo.path_or_url}
                   </div>
 
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.76rem", color: "var(--text-secondary)" }}>
                     <span>{repo.total_commits} commits</span>
-                    <span style={{ color: "var(--accent-primary)", fontWeight: 500 }}>Open →</span>
+                    <span style={{ color: "var(--accent-primary)" }}>Open &rarr;</span>
                   </div>
                 </div>
               ))}

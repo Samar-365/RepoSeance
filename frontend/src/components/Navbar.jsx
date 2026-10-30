@@ -1,7 +1,23 @@
 import React from "react";
-import { Ghost, LayoutDashboard, MessageSquare, GitCommit, AlertCircle, FileText, FolderPlus } from "lucide-react";
+import { 
+  Ghost, 
+  Home, 
+  LayoutDashboard, 
+  MessageSquare, 
+  GitCommit, 
+  AlertCircle, 
+  FileText, 
+  FolderPlus 
+} from "lucide-react";
 
-export default function Navbar({ activeTab, setActiveTab, currentRepo, ollamaStatus, onOpenSummon }) {
+export default function Navbar({ 
+  activeTab, 
+  setActiveTab, 
+  currentRepo, 
+  ollamaStatus, 
+  onOpenSummon, 
+  onGoHome 
+}) {
   const isConnected = ollamaStatus?.ollama_status === "connected";
   const modelName = ollamaStatus?.configured_model || "gemma2:2b";
 
@@ -22,10 +38,11 @@ export default function Navbar({ activeTab, setActiveTab, currentRepo, ollamaSta
         justifyContent: "space-between",
         gap: 16
       }}>
-        {/* Brand */}
+        {/* Brand Logo & Name - Always navigates to Landing Page */}
         <div 
-          onClick={onOpenSummon}
+          onClick={onGoHome}
           style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", userSelect: "none" }}
+          title="Return to Home / Landing Page"
         >
           <div style={{
             width: 32,
@@ -58,6 +75,15 @@ export default function Navbar({ activeTab, setActiveTab, currentRepo, ollamaSta
             alignItems: "center",
             gap: 4
           }}>
+            <button
+              onClick={onGoHome}
+              className={`btn btn-ghost ${activeTab === "landing" ? "active" : ""}`}
+              style={{ padding: "5px 11px", fontSize: "0.82rem" }}
+              title="Home Landing Page"
+            >
+              <Home size={14} /> Home
+            </button>
+
             <button
               onClick={() => setActiveTab("dashboard")}
               className={`btn btn-ghost ${activeTab === "dashboard" ? "active" : ""}`}
@@ -102,34 +128,10 @@ export default function Navbar({ activeTab, setActiveTab, currentRepo, ollamaSta
 
         {/* Right Status Controls */}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          {/* Status Badge */}
-          <div 
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 7,
-              padding: "4px 10px",
-              background: "rgba(255, 255, 255, 0.03)",
-              border: "1px solid var(--border-subtle)",
-              borderRadius: 6,
-              fontSize: "0.75rem"
-            }}
-          >
-            <div style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: isConnected ? "var(--accent-success)" : "var(--accent-warning)"
-            }} className="pulse-dot" />
-            <span style={{ color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>
-              {isConnected ? modelName : "Offline"}
-            </span>
-          </div>
-
           <button
             onClick={onOpenSummon}
-            className="btn btn-ghost"
-            style={{ padding: "5px 11px", fontSize: "0.8rem" }}
+            className={`btn ${activeTab === "summon" ? "btn-primary" : "btn-ghost"}`}
+            style={{ padding: "5px 12px", fontSize: "0.8rem", gap: 6 }}
           >
             <FolderPlus size={14} /> Analyze Repo
           </button>
