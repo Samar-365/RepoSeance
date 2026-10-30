@@ -1,5 +1,5 @@
 # Software Requirements Specification (SRS)
-## The Dead Code Séance
+## RepoSeance
 **Version:** 1.0  
 **Project Type:** AI-Powered Repository Analysis Tool  
 **Hackathon:** Hacktoberfest 2026 — Ghost in the Machine  
@@ -11,7 +11,7 @@
 
 ### 1.1 Purpose
 
-The Dead Code Séance is an AI-powered software archaeology tool designed to help developers understand abandoned, archived, or unfamiliar GitHub repositories.
+RepoSeance is an AI-powered software archaeology tool designed to help developers understand abandoned, archived, or unfamiliar GitHub repositories.
 
 The application analyzes a repository's source code, commit history, issues, pull requests, and available discussions to reconstruct the project's development history. Users can then interact with an AI assistant that answers questions about the repository's past, present state, and unfinished features.
 
@@ -69,7 +69,7 @@ The initial version will prioritize repository analysis, conversational explorat
 
 ### 2.1 Product Perspective
 
-The Dead Code Séance will operate as a web-based interface connected to a Python backend and a local AI inference engine.
+RepoSeance will operate as a web-based interface connected to a Python backend and a local AI inference engine.
 
 Users will provide a GitHub repository URL or select a repository available on their computer. The backend will collect and process relevant project information, create a searchable repository index, and provide relevant context to the AI model.
 
@@ -849,7 +849,7 @@ The initial release will be considered successful when:
 
 ## 13. Conclusion
 
-The Dead Code Séance aims to make software archaeology accessible through open-weight AI. By examining repository history, source code, and available discussions, the application helps developers recover technical context that might otherwise be lost when projects become inactive or unfamiliar.
+RepoSeance aims to make software archaeology accessible through open-weight AI. By examining repository history, source code, and available discussions, the application helps developers recover technical context that might otherwise be lost when projects become inactive or unfamiliar.
 
 Its defining feature is an AI assistant that answers questions about a repository while linking its conclusions to verifiable evidence. Local Gemma inference supports the project's privacy and open-innovation goals, while the unfinished-business report helps turn historical analysis into actionable maintenance recommendations.
 

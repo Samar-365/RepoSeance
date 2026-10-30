@@ -10,7 +10,7 @@ from backend.routes.chat import chat_bp
 from backend.routes.reports import reports_bp
 
 def create_app() -> Flask:
-    """Application factory for The Dead Code Séance backend."""
+    """Application factory for RepoSeance backend."""
     app = Flask(__name__)
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -40,7 +40,7 @@ def create_app() -> Flask:
 
         return jsonify({
             "status": "healthy",
-            "service": "The Dead Code Séance API",
+            "service": "RepoSeance API",
             "version": "1.0.0",
             "ai_inference": {
                 "ollama_status": ollama_status,
@@ -61,5 +61,5 @@ def create_app() -> Flask:
 
 if __name__ == "__main__":
     app = create_app()
-    print(f"👻 The Dead Code Séance backend rising on port {PORT}...")
+    print(f"[RepoSeance] backend rising on port {PORT}...")
     app.run(host="0.0.0.0", port=PORT, debug=DEBUG)

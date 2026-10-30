@@ -49,7 +49,7 @@ export default function Navbar({ activeTab, setActiveTab, currentRepo, ollamaSta
               WebkitTextFillColor: "transparent",
               lineHeight: 1.1
             }}>
-              THE DEAD CODE SÉANCE
+              RepoSeance
             </h1>
             <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", letterSpacing: "0.08em" }}>
               SOFTWARE ARCHAEOLOGY & LOCAL AI

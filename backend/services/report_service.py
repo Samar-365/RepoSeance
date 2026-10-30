@@ -38,7 +38,7 @@ class ReportService:
 
         # Assemble full structured markdown report
         markdown_body = ai_resp.get("text", "")
-        full_markdown = f"""# The Dead Code Séance: Resurrection Report
+        full_markdown = f"""# RepoSeance: Resurrection Report
 **Repository:** {repo['name']}  
 **Source:** `{repo['path_or_url']}`  
 **Analyzed At:** {repo['analyzed_at'] or 'Recently'}  

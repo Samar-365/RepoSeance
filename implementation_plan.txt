@@ -1,6 +1,6 @@
-# Implementation Plan: The Dead Code Séance
+# Implementation Plan: RepoSeance
 
-An AI-powered software archaeology tool built for Hacktoberfest 2026: Ghost in the Machine. The Dead Code Séance resurrects the context of abandoned, legacy, or unfamiliar Git repositories using local Gemma models, Git history extraction, and verifiable evidence grounding.
+An AI-powered software archaeology tool built for Hacktoberfest 2026: Ghost in the Machine. RepoSeance resurrects the context of abandoned, legacy, or unfamiliar Git repositories using local Gemma models, Git history extraction, and verifiable evidence grounding.
 
 ---
 

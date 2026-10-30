@@ -45,7 +45,7 @@ def run_test():
     print(f"   Found {unfinished['total']} unfinished items; breakdown: {unfinished['breakdown']}")
 
     print("8. Testing EvidenceRetriever.search_evidence...")
-    evidence = EvidenceRetriever.search_evidence(repo_id, "Dead Code Séance")
+    evidence = EvidenceRetriever.search_evidence(repo_id, "RepoSeance")
     print(f"   Retrieved {len(evidence)} evidence matches:")
     for e in evidence[:2]:
         print(f"     - [{e['source_type']}] {e['source_identifier']}: {e['content_excerpt'][:80]}...")

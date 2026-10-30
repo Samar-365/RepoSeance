@@ -1,4 +1,4 @@
--- The Dead Code Séance Database Schema (SQLite + FTS5)
+-- RepoSeance Database Schema (SQLite + FTS5)
 
 CREATE TABLE IF NOT EXISTS repositories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

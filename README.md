@@ -1,4 +1,4 @@
-# 👻 The Dead Code Séance
+# 👻 RepoSeance
 ### *AI-Powered Software Archaeology & Codebase Resurrection*
 
 > **Hackathon:** Hacktoberfest 2026 — *Ghost in the Machine*  
@@ -9,9 +9,9 @@
 
 ## 📜 Overview
 
-**The Dead Code Séance** is an AI-powered software archaeology tool designed to explore, understand, and revive abandoned, archived, or unfamiliar codebases.
+**RepoSeance** is an AI-powered software archaeology tool designed to explore, understand, and revive abandoned, archived, or unfamiliar codebases.
 
-Rather than treating legacy code as disposable, The Dead Code Séance reconstructs a project's development history from its Git commits, source code markers (`TODO`, `FIXME`, `HACK`), unresolved issues, and pull requests. Users interact with a conversational AI assistant that adopts the persona of the **Repository Ghost** — providing evidence-grounded answers about past architectural decisions, recurring bugs, and unfinished ambitions without hallucinating.
+Rather than treating legacy code as disposable, RepoSeance reconstructs a project's development history from its Git commits, source code markers (`TODO`, `FIXME`, `HACK`), unresolved issues, and pull requests. Users interact with a conversational AI assistant that adopts the persona of the **Repository Ghost** — providing evidence-grounded answers about past architectural decisions, recurring bugs, and unfinished ambitions without hallucinating.
 
 ---
 

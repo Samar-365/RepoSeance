@@ -51,7 +51,7 @@ export default function SummonView({ repositories, onSelectRepo, onAnalysisCompl
           WebkitTextFillColor: "transparent",
           marginBottom: 12
         }}>
-          SUMMON THE DEAD CODE
+          SUMMON REPOSEANCE
         </h1>
         <p style={{ color: "var(--text-secondary)", fontSize: "1.1rem", maxWidth: 640, margin: "0 auto", lineHeight: 1.6 }}>
           Resurrect the lost context of abandoned, archived, or unfamiliar software repositories.
