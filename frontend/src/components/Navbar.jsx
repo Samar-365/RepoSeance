@@ -1,20 +1,33 @@
 import React from "react";
-import { Ghost, Database, Skull, GitCommit, AlertOctagon, ScrollText, Sparkles, FolderGit2, Cpu } from "lucide-react";
+import { Ghost, Database, Skull, GitCommit, AlertOctagon, ScrollText, Sparkles, FolderGit2, BookOpen, Layers } from "lucide-react";
 
 export default function Navbar({ activeTab, setActiveTab, currentRepo, ollamaStatus, onOpenSummon }) {
   const isConnected = ollamaStatus?.ollama_status === "connected";
   const modelName = ollamaStatus?.configured_model || "gemma2:2b";
 
+  const scrollToAnchor = (id) => {
+    if (activeTab !== "summon") {
+      setActiveTab("summon");
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } else {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <header style={{
-      background: "rgba(11, 14, 20, 0.88)",
+      background: "rgba(10, 13, 19, 0.88)",
       backdropFilter: "blur(20px)",
       WebkitBackdropFilter: "blur(20px)",
       borderBottom: "1px solid var(--border-subtle)",
       position: "sticky",
       top: 0,
       zIndex: 100,
-      padding: "10px 24px",
+      padding: "10px 24px"
     }}>
       <div style={{
         maxWidth: 1440,
@@ -24,7 +37,7 @@ export default function Navbar({ activeTab, setActiveTab, currentRepo, ollamaSta
         justifyContent: "space-between",
         gap: 20
       }}>
-        {/* Brand */}
+        {/* Brand Crest */}
         <div 
           onClick={onOpenSummon}
           style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer", userSelect: "none" }}
@@ -42,6 +55,7 @@ export default function Navbar({ activeTab, setActiveTab, currentRepo, ollamaSta
           }}>
             <Ghost size={20} color="var(--spectral-teal)" className="spectral-glow" />
           </div>
+
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span className="font-gothic" style={{
@@ -62,58 +76,106 @@ export default function Navbar({ activeTab, setActiveTab, currentRepo, ollamaSta
           </div>
         </div>
 
-        {/* Navigation Tabs (Available when a repository is active) */}
-        {currentRepo && (
-          <nav style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 4,
-            background: "rgba(0, 0, 0, 0.35)",
-            padding: "4px 6px",
-            borderRadius: 10,
-            border: "1px solid var(--border-subtle)"
-          }}>
-            <button
-              onClick={() => setActiveTab("dashboard")}
-              className={`btn btn-ghost ${activeTab === "dashboard" ? "active" : ""}`}
-              style={{ padding: "6px 12px", fontSize: "0.82rem" }}
-            >
-              <Database size={14} /> Overview
-            </button>
+        {/* Center Navigation Bar */}
+        <nav style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 4,
+          background: "rgba(0, 0, 0, 0.4)",
+          padding: "4px 6px",
+          borderRadius: 10,
+          border: "1px solid var(--border-subtle)"
+        }}>
+          {/* Story Anchor Links if in Landing/Story mode */}
+          {activeTab === "summon" && (
+            <>
+              <button
+                onClick={() => scrollToAnchor("hero")}
+                className="btn btn-ghost"
+                style={{ padding: "6px 12px", fontSize: "0.82rem" }}
+              >
+                Prologue
+              </button>
 
-            <button
-              onClick={() => setActiveTab("chat")}
-              className={`btn btn-ghost ${activeTab === "chat" ? "active" : ""}`}
-              style={{ padding: "6px 12px", fontSize: "0.82rem" }}
-            >
-              <Skull size={14} /> Séance Chamber
-            </button>
+              <button
+                onClick={() => scrollToAnchor("stratigraphy")}
+                className="btn btn-ghost"
+                style={{ padding: "6px 12px", fontSize: "0.82rem" }}
+              >
+                <Layers size={13} /> Strata
+              </button>
 
-            <button
-              onClick={() => setActiveTab("timeline")}
-              className={`btn btn-ghost ${activeTab === "timeline" ? "active" : ""}`}
-              style={{ padding: "6px 12px", fontSize: "0.82rem" }}
-            >
-              <GitCommit size={14} /> Stratigraphy
-            </button>
+              <button
+                onClick={() => scrollToAnchor("oracle")}
+                className="btn btn-ghost"
+                style={{ padding: "6px 12px", fontSize: "0.82rem" }}
+              >
+                <Skull size={13} /> Oracle
+              </button>
 
-            <button
-              onClick={() => setActiveTab("unfinished")}
-              className={`btn btn-ghost ${activeTab === "unfinished" ? "active" : ""}`}
-              style={{ padding: "6px 12px", fontSize: "0.82rem" }}
-            >
-              <AlertOctagon size={14} /> Unfinished Vault
-            </button>
+              <button
+                onClick={() => scrollToAnchor("altar")}
+                className="btn btn-ghost active"
+                style={{ padding: "6px 12px", fontSize: "0.82rem" }}
+              >
+                <Sparkles size={13} /> Summon
+              </button>
+            </>
+          )}
 
-            <button
-              onClick={() => setActiveTab("report")}
-              className={`btn btn-ghost ${activeTab === "report" ? "active" : ""}`}
-              style={{ padding: "6px 12px", fontSize: "0.82rem" }}
-            >
-              <ScrollText size={14} /> Resurrection Scroll
-            </button>
-          </nav>
-        )}
+          {/* Workspace Tabs if a repository is active */}
+          {currentRepo && (
+            <>
+              <button
+                onClick={onOpenSummon}
+                className={`btn btn-ghost ${activeTab === "summon" ? "active" : ""}`}
+                style={{ padding: "6px 12px", fontSize: "0.82rem" }}
+              >
+                Story
+              </button>
+
+              <button
+                onClick={() => setActiveTab("dashboard")}
+                className={`btn btn-ghost ${activeTab === "dashboard" ? "active" : ""}`}
+                style={{ padding: "6px 12px", fontSize: "0.82rem" }}
+              >
+                <Database size={13} /> Sanctum
+              </button>
+
+              <button
+                onClick={() => setActiveTab("chat")}
+                className={`btn btn-ghost ${activeTab === "chat" ? "active" : ""}`}
+                style={{ padding: "6px 12px", fontSize: "0.82rem" }}
+              >
+                <Skull size={13} /> Séance
+              </button>
+
+              <button
+                onClick={() => setActiveTab("timeline")}
+                className={`btn btn-ghost ${activeTab === "timeline" ? "active" : ""}`}
+                style={{ padding: "6px 12px", fontSize: "0.82rem" }}
+              >
+                <GitCommit size={13} /> Timeline
+              </button>
+
+              <button
+                onClick={() => setActiveTab("unfinished")}
+                className={`btn btn-ghost ${activeTab === "unfinished" ? "active" : ""}`}
+                style={{ padding: "6px 12px", fontSize: "0.82rem" }}
+              >
+                <AlertOctagon size={13} /> Vault
+              </button>
+
+              <button
+                onClick={() => setActiveTab("report")}
+                className={`btn btn-ghost ${activeTab === "report" ? "active" : ""}`}
+                style={{ padding: "6px 12px", fontSize: "0.82rem" }}
+              >
+                <ScrollText size={13} /> Scroll
+              </button>
+            </>
+          )}
+        </nav>
 
         {/* Right Status Controls */}
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -142,14 +204,16 @@ export default function Navbar({ activeTab, setActiveTab, currentRepo, ollamaSta
             </span>
           </div>
 
-          {/* Summon Repository Button */}
-          <button
-            onClick={onOpenSummon}
-            className={`btn ${activeTab === "summon" ? "btn-primary" : "btn-ghost"}`}
-            style={{ padding: "6px 14px", fontSize: "0.82rem" }}
-          >
-            <FolderGit2 size={14} /> Summon Repo
-          </button>
+          {/* Quick Summon Button */}
+          {activeTab !== "summon" && (
+            <button
+              onClick={onOpenSummon}
+              className="btn btn-ghost"
+              style={{ padding: "6px 12px", fontSize: "0.8rem" }}
+            >
+              <FolderGit2 size={13} /> Switch Repo
+            </button>
+          )}
         </div>
       </div>
     </header>

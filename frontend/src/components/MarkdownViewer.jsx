@@ -209,3 +209,4 @@ export default function MarkdownViewer({ content, onCitationClick, className = "
 
   return <div className={`markdown-content ${className}`}>{rendered}</div>;
 }
+
